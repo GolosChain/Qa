@@ -22,10 +22,10 @@ docker container rm ${contaner}
 
 docker volume rm ${volume_name}
 
-dockor pull ${image}
+docker pull ${image}
 
 docker run \
-            -d \
+           -d \
            --name ${contaner} \
            -p 8090:8090 \
            -p 8091:8091 \
