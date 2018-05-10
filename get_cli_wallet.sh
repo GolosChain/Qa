@@ -34,6 +34,8 @@ docker run \
            -v /et/golosd:/etc/golosd \
            ${image}
 
+rm -rf ${file_name}
+
 docker cp ${contaner}:${file_path}${file_name} .
 
 chmod 777 ${file_name}
