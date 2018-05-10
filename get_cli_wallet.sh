@@ -2,19 +2,27 @@
 
 image_name="goloschain/golos"
 
-tag=$0
+tag=$1
 
 image="${image_name}:${tag}"
 
-file_path="/var/app/"
+file_path="/usr/local/bin/"
 
 file_name="cli_wallet"
 
 contaner="golos1"
 
-docker pull ${image}
+dockor pull ${image}
 
-docker run --name ${contaner} -d ${image}
+docker run \
+            -d \
+           --name ${contaner} \
+           -p 8090:8090 \
+           -p 8091:8091 \
+           -p 2001:2001 \
+           -v chain_data_01:/var/lib/golosd \
+           -v /et/golosd:/etc/golosd \
+           ${image}
 
 docker cp ${contaner}:${file_path}${file_name} .
 
