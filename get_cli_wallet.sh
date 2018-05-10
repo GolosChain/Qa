@@ -12,6 +12,16 @@ file_name="cli_wallet"
 
 contaner="golos1"
 
+volume_name="chain_data_01"
+
+voluem="${volume_name}:/var/lib/golosd"
+
+docker container stop ${contaner}
+
+docker container rm ${contaner}
+
+docker volume rm ${volume_name}
+
 dockor pull ${image}
 
 docker run \
@@ -20,7 +30,7 @@ docker run \
            -p 8090:8090 \
            -p 8091:8091 \
            -p 2001:2001 \
-           -v chain_data_01:/var/lib/golosd \
+           -v ${voluem} \
            -v /et/golosd:/etc/golosd \
            ${image}
 
