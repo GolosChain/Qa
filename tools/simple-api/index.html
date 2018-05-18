@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="zxcat">
+<title>API</title>
+<script src="js/api.js"></script>
+<script src="js/ws.js"></script>
+<!--script src="https://unpkg.com/golos-js@0.6.3/dist/golos.min.js"></script-->
+<style>
+.api-tbl input {background:#F8F8F8;border:1px solid #CCC; padding:2px}
+.api-tbl input[required] {background:#FFF}
+</style>
+<script>
+var w = new KWS(), ApiMethods = [], ApiParamsFix = {};
+
+let mInputs = {};				// input ids (todo: inputs) to easily get values
+function showApiMethods(v) {
+	var h = `<h1>API ${v}</h1>`;
+	for (var api of ApiMethods) {
+		let N = api.name,
+			M = api.methods;
+		h += `<h2>${N}</h2><table class="api-tbl">`;
+		for (var m in M) {
+			let p = M[m];
+			h += `<tr><td><button db="${N}" method="${m}" onclick="callMethod(this)">${m}</button></td>`;
+			var params = '<i>no params</i>';
+			if (p && p.length) {
+				params = '';
+				for (var a of p) {
+					let optional = a[0] === '?';
+					if (optional) a = a.substr(1);
+					let id = 'p-'+api+'-'+m+'-'+a;
+					params += `<label for="${id}">${a}: <input id="${id}" name="${a}" ${optional?'':'required'}/></label> `;
+
+					var inputs = mInputs[m] || [];
+					inputs.push(id);
+					mInputs[m] = inputs;
+				}
+			}
+			h += `<td>${params}</td>`;
+		}
+		h += '</table>';
+	}
+	$('all-api').innerHTML = h;
+}
+
+function callMethod(b) {
+	let db = b.getAttribute('db');
+	let n = b.getAttribute('method');
+	let m = mInputs[n];
+	var p = [];
+	if (m && m.length)
+		for (var id of m) {
+			let el = $(id);
+			let v = el.value;
+			if (v.trim() === '' && !el.required) {
+				break;	// first missing optional prevents adding other optionals
+			}
+			p.push(v);
+		}
+// 	if (ApiParamsFix[n] && p.length) p[0] = ApiParamsFix[n](p[0]);
+	if (ApiParamsFix[n]) p = ApiParamsFix._fix(n, p);
+	w.send(db, n, p);
+}
+</script>
+<script>
+function $(id){return document.getElementById(id)}
+function qs(s) {return document.querySelector(s)||{}}
+
+function log(txt,b) {
+	var l = $('log');
+	var p = document.createElement('p');
+	p.innerHTML = txt;
+	l.appendChild(p);
+}
+
+</script>
+<style>
+body {
+	font-family: "Helvetica Neue";
+	font-size: 14px;
+}
+.fl {float:left}
+.red {color:red}
+.dred {color:darkred}
+.green {color:green}
+
+
+table {border-collapse: collapse;}
+table tbody tr:nth-child(2n) {background: #f1f1f1}
+table.solid tbody tr:nth-child(2n) {background: transparent}
+table tbody tr:hover td		 {background: rgba(255,255,200,.5)}
+
+</style>
+</head><body>
+<div id="log"></div>
+
+<hr>
+<style>
+#nodes label {margin:4ps; border:1px solid #EEE}
+</style>
+<div id="apis"><b>API:</b> </div>
+<div id="nodes">NODE:
+<label for="node1"><input id="node1" type="radio" name="node" onclick="selectNode(this)" value="wss://ws.golos.io"> golos.io</label>
+<label for="node2"><input id="node2" type="radio" name="node" onclick="selectNode(this)" value="wss://ws.testnet.golos.io"> testnet</label>
+<label for="node3"><input id="node3" type="radio" name="node" onclick="selectNode(this)" value="wss://api.golos.cf"> vik</label>
+<label for="node4"><input id="node4" type="radio" name="node" onclick="selectNode(this)" value="wss://api.golos.blckchnd.com/ws"> blckchnd</label>
+<label for="node5"><input id="node5" type="radio" name="node" onclick="selectNode(this)" value="ws://127.0.0.1:8091" checked> localhost</label>
+</div>
+<script>
+//let nodes = document.querySelectorsAll('#nodes radio');
+$('node5').click();
+function selectNode(radio) {
+	let n = radio.value;
+	console.log(radio, n)
+	window.GOLOS_NODE = n;
+	w.setNode(n);
+	// golos.config.set('websocket',n);
+ 	// golos.config.set('chain_id','782a3039b478c839e4cb0c941ff4eaeb7df40bdd68bd441afd444b9da763de12');	//mainnet
+	// golos.config.set('chain_id','5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099de9deef6cdb679');
+}
+
+function showApis() {
+	console.log('showApis');
+	let i = 0, apis = $('apis');
+	for (let v in API) {
+		let l = document.createElement('label');
+		l.innerHTML = `<label for="api${i}"><input id="api${i}" type="radio" name="api" onclick="selectApi('${v}')" value="${i}"> ${v}</label>`;
+		apis.appendChild(l);
+		i++;
+	}
+}
+function selectApi(v) {
+	let a = API[v];
+	if (!a) return alert(`unknown api version ${v}`);
+	ApiMethods = a.methods;
+	ApiParamsFix = a.paramFixes;
+	showApiMethods(v);
+}
+
+function init() {
+	showApis();
+	$('api1').click();
+}
+setTimeout(init, 1000);
+
+</script>
+<hr><div id="all-api"></div>
+</body></html>
