@@ -61,7 +61,7 @@ function callMethod(b) {
 			p.push(v);
 		}
 // 	if (ApiParamsFix[n] && p.length) p[0] = ApiParamsFix[n](p[0]);
-	if (ApiParamsFix[n]) p = ApiParamsFix._fix(n, p);
+	if (ApiParamsFix[n]) p = fixApiParams(n, p);
 	w.send(db, n, p);
 }
 </script>

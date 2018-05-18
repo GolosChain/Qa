@@ -2,8 +2,6 @@ console.log(18);
 API['0.18'] = {
 
 paramFixes: {
-	_fix: (name, args) => {let fn = paramFixes[name]||console.log;return fn.apply(null, args)},
-
 	get_accounts: _csv2Arr,
 
 	get_block_info: (from,n) => {return [{start_block_num:from, count:n}]},

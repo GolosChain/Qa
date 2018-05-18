@@ -28,7 +28,7 @@ class KWS extends Network {
 				if (e)
 					console.log(e, id, data.result || data);
 				else
-					console.log(id, data.result || data);
+					console.log(data.id, data.result || data);
 
 				//ids
 				let id = data.id;
