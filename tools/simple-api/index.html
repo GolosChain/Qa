@@ -9,14 +9,44 @@
 <script src="js/ws.js"></script>
 <!--script src="https://unpkg.com/golos-js@0.6.3/dist/golos.min.js"></script-->
 <style>
+body {
+	font-family: "Helvetica Neue", Verdana, sans-serif;
+	font-size: 14px;
+}
+.fl {float:left}
+.red {color:red}
+.dred {color:darkred}
+.green {color:green}
+
+table {border-collapse: collapse;}
+table tbody tr:nth-child(2n) {background: #f1f1f1}
+table.solid tbody tr:nth-child(2n) {background: transparent}
+table tbody tr:hover td	{background: rgba(255,255,200,.5)}
+
 .api-tbl input {background:#F8F8F8;border:1px solid #CCC; padding:2px}
 .api-tbl input[required] {background:#FFF}
+
+#nodes label, #apis label {margin:4px; border:1px solid #EEE}
+#nodes label sub {font-size: 66%}
+
 </style>
 <script>
-var w = new KWS(), ApiMethods = [], ApiParamsFix = {};
+const NODES = [
+//	[url, name, ?version, ?default]
+	["wss://ws.golos.io",			"golos.io"],
+	["wss://ws17.golos.io",			"ws17"],
+	["wss://ws.testnet.golos.io",	"testnet", 18],
+	["wss://api.golos.cf",			"vik"],
+	["wss://api.golos.blckchnd.com/ws", "blckchnd"],
+	["ws://127.0.0.1:8091",			"localhost", 18, true],
+];
+let w = new KWS(), ApiMethods = [], ApiParamsFix = {}, currentApi = '';
 
 let mInputs = {};				// input ids (todo: inputs) to easily get values
 function showApiMethods(v) {
+	if (v === currentApi) return;
+	currentApi = v;
+	mInputs = {};
 	var h = `<h1>API ${v}</h1>`;
 	for (var api of ApiMethods) {
 		let N = api.name,
@@ -31,7 +61,7 @@ function showApiMethods(v) {
 				for (var a of p) {
 					let optional = a[0] === '?';
 					if (optional) a = a.substr(1);
-					let id = 'p-'+api+'-'+m+'-'+a;
+					let id = 'p-'+N+'-'+m+'-'+a;
 					params += `<label for="${id}">${a}: <input id="${id}" name="${a}" ${optional?'':'required'}/></label> `;
 
 					var inputs = mInputs[m] || [];
@@ -44,6 +74,8 @@ function showApiMethods(v) {
 		h += '</table>';
 	}
 	$('all-api').innerHTML = h;
+	function on13(e){if (e.keyCode == 13) e.target.parentNode.parentNode.parentNode.firstChild.firstChild.click()}
+	document.querySelectorAll('#all-api input').forEach(el=>{el.onkeypress=on13});
 }
 
 function callMethod(b) {
@@ -60,13 +92,12 @@ function callMethod(b) {
 			}
 			p.push(v);
 		}
-// 	if (ApiParamsFix[n] && p.length) p[0] = ApiParamsFix[n](p[0]);
 	if (ApiParamsFix[n]) p = fixApiParams(n, p);
+	console.log("CALL:", db, n, p);
 	w.send(db, n, p);
 }
-</script>
-<script>
-function $(id){return document.getElementById(id)}
+
+function $(id) {return document.getElementById(id)}
 function qs(s) {return document.querySelector(s)||{}}
 
 function log(txt,b) {
@@ -75,53 +106,39 @@ function log(txt,b) {
 	p.innerHTML = txt;
 	l.appendChild(p);
 }
-
 </script>
-<style>
-body {
-	font-family: "Helvetica Neue";
-	font-size: 14px;
-}
-.fl {float:left}
-.red {color:red}
-.dred {color:darkred}
-.green {color:green}
-
-
-table {border-collapse: collapse;}
-table tbody tr:nth-child(2n) {background: #f1f1f1}
-table.solid tbody tr:nth-child(2n) {background: transparent}
-table tbody tr:hover td		 {background: rgba(255,255,200,.5)}
-
-</style>
 </head><body>
-<div id="log"></div>
-
-<hr>
-<style>
-#nodes label {margin:4ps; border:1px solid #EEE}
-</style>
+<div id="log"></div><hr>
 <div id="apis"><b>API:</b> </div>
-<div id="nodes">NODE:
-<label for="node1"><input id="node1" type="radio" name="node" onclick="selectNode(this)" value="wss://ws.golos.io"> golos.io</label>
-<label for="node2"><input id="node2" type="radio" name="node" onclick="selectNode(this)" value="wss://ws.testnet.golos.io"> testnet</label>
-<label for="node3"><input id="node3" type="radio" name="node" onclick="selectNode(this)" value="wss://api.golos.cf"> vik</label>
-<label for="node4"><input id="node4" type="radio" name="node" onclick="selectNode(this)" value="wss://api.golos.blckchnd.com/ws"> blckchnd</label>
-<label for="node5"><input id="node5" type="radio" name="node" onclick="selectNode(this)" value="ws://127.0.0.1:8091" checked> localhost</label>
-</div>
+<div id="nodes">NODE:</div>
 <script>
-//let nodes = document.querySelectorsAll('#nodes radio');
-$('node5').click();
-function selectNode(radio) {
-	let n = radio.value;
-	console.log(radio, n)
+function selectNode(i) {
+	let node = NODES[i];	if (!node) return alert("unknown node index: "+i);
+	let n = node[0];
 	window.GOLOS_NODE = n;
 	w.setNode(n);
 	// golos.config.set('websocket',n);
  	// golos.config.set('chain_id','782a3039b478c839e4cb0c941ff4eaeb7df40bdd68bd441afd444b9da763de12');	//mainnet
 	// golos.config.set('chain_id','5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099de9deef6cdb679');
+	let v = normApi(node[2], true);
+	if (v >= 0) $('api'+v).click();
 }
 
+function showNodes() {
+	let def = 0;
+	for (let i in NODES) {
+		let node = NODES[i];
+		let id = 'node'+i;
+		let v = normApi(node[2]);
+		let l = document.createElement('label');
+		l.setAttribute("for", id);
+		l.innerHTML =
+			`<input id="${id}" type="radio" name="node" onclick="selectNode(${i})" value="${node[0]}" data-v="${v}"> ${node[1]}<sub>${v}</sub> `;
+		$('nodes').appendChild(l);
+		if (node[3]) def = id;
+	}
+	if (def) $(def).click();
+}
 function showApis() {
 	console.log('showApis');
 	let i = 0, apis = $('apis');
@@ -142,7 +159,7 @@ function selectApi(v) {
 
 function init() {
 	showApis();
-	$('api1').click();
+	showNodes();
 }
 setTimeout(init, 1000);
 

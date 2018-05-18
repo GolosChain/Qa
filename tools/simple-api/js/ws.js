@@ -17,7 +17,7 @@ class KWS extends Network {
 	start() {
 		this.ws = new WebSocket(this.node);
 		this.ws.onopen = e => {
-			console.log(e);
+			console.log('Connected ' + this.node, e);
 			this.ws.onmessage = raw => {
 				var e = false, data = {};
 				try {
@@ -26,9 +26,9 @@ class KWS extends Network {
 					e = exc;
 				}
 				if (e)
-					console.log(e, id, data.result || data);
+					console.log("ERROR", e, data.id, data.result || data);
 				else
-					console.log(data.id, data.result || data);
+					console.log("RESULT:", data.id, data.result || data);
 
 				//ids
 				let id = data.id;
