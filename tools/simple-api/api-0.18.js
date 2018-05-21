@@ -102,11 +102,12 @@ methods: [
 	},{
 		name: "social_network",
 		methods: {
-			get_content:			["author", "permlink"],
-			get_content_replies:	["parent", "parentPermlink"],
-			get_active_votes:		["author", "permlink"],
+			get_content:			["author", "permlink", "?vote_limit"],
+			get_content_replies:	["parent", "parentPermlink", "?vote_limit"],
+			get_all_content_replies:["string", "permlink", "?vote_limit"],
+			get_active_votes:		["author", "permlink", "?limit"],
 			get_account_votes:		["voter", "?from", "?limit"],
-			get_replies_by_last_update:	["startAuthor", "startPermlink", "limit"],
+			get_replies_by_last_update:	["startAuthor", "startPermlink", "limit", "?vote_limit"],
 			// get_liquidity_queue:	["startAccount", "limit"],
 		}
 	},{
