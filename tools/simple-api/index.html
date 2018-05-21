@@ -141,8 +141,9 @@ function showNodes() {
 }
 function showApis() {
 	console.log('showApis');
-	let i = 0, apis = $('apis');
-	for (let v in API) {
+	let apis = $('apis');
+	for (let i in APIS) {
+		let v = APIS[i];
 		let l = document.createElement('label');
 		l.innerHTML = `<label for="api${i}"><input id="api${i}" type="radio" name="api" onclick="selectApi('${v}')" value="${i}"> ${v}</label>`;
 		apis.appendChild(l);
