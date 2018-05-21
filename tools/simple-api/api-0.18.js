@@ -105,7 +105,7 @@ methods: [
 			get_content:			["author", "permlink"],
 			get_content_replies:	["parent", "parentPermlink"],
 			get_active_votes:		["author", "permlink"],
-			get_account_votes:		["voter"],
+			get_account_votes:		["voter", "?from", "?limit"],
 			get_replies_by_last_update:	["startAuthor", "startPermlink", "limit"],
 			// get_liquidity_queue:	["startAccount", "limit"],
 		}
