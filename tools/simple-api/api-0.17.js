@@ -4,8 +4,8 @@ API['0.17'] = {
 paramFixes: {
 	get_accounts: _csv2Arr,
 
-	get_block_info: (from,n) => {return [{start_block_num:from, count:n}]},
-	get_blocks_with_info: (from,n) => {return [{start_block_num:from, count:n}]},
+	// get_block_info: (from,n) => {return [{start_block_num:from, count:n}]},
+	// get_blocks_with_info: (from,n) => {return [{start_block_num:from, count:n}]},
 
 	get_discussions_by_trending: _str2Obj,
 	get_discussions_by_created:	 _str2Obj,
@@ -148,6 +148,12 @@ methods: [
 			get_market_history:		["bucket_seconds" , "start", "end"],
 			get_market_history_buckets:	[],
 			get_open_orders:		["owner"],
+		}
+	},{
+		name: "private_message",
+		methods: {
+			get_inbox:		["to", "newest"],
+			get_outbox:		["from", "newest"],
 		}
 	}
 ]

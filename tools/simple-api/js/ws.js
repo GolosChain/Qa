@@ -42,6 +42,11 @@ class KWS extends Network {
 					}
 				}
 			}
+			if (this.sendOnConnect) {
+				let a = this.sendOnConnect;
+				this.sendOnConnect = null;
+				this.send(a[0], a[1], a[2], a[3]);
+			}
 		}
 	}
 	stop() {
@@ -54,7 +59,18 @@ class KWS extends Network {
 	}
 
 	send(db, method, params, onmessage) {
-// 		if (!this.ws) {return}
+		// if (!this.ws) {return}
+		if (this.ws.readyState == 3) {
+			if (!this.sendOnConnect && this.node) {
+				console.log('Connection closed, reconnect...')
+				this.sendOnConnect = [db, method, params, onmessage];
+				this.start();
+			} else {
+				console.log("can't reconnect, try manually");
+				this.sendOnConnect = null;
+			}
+			return;
+		}
 		let id = Math.random()*1000|0;			//todo
 		this.ids[id] = onmessage;
 		var req = {

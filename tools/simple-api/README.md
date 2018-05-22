@@ -12,8 +12,8 @@ Simple browser tool to access Golos Websocket API. It doesn't need `golos.js` an
 3. Set api method parameters and click button with it's name to call method
 4. Results will appear in developer console
 
-**Note:** Auto-reconnect on connection lost is not supported.
-To reconnect node just click it's radio button again.
+**Note:** Simple auto-reconnect on connection lost supported.
+To reconnect manually, just click node's radio button again.
 
 ## Customization
 

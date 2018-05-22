@@ -3,9 +3,10 @@ API['0.18'] = {
 
 paramFixes: {
 	get_accounts: _csv2Arr,
+	get_account_reputations: _csv2Arr,
 
-	get_block_info: (from,n) => {return [{start_block_num:from, count:n}]},
-	get_blocks_with_info: (from,n) => {return [{start_block_num:from, count:n}]},
+	// get_block_info: (from,n) => {return [{start_block_num:from, count:n}]},
+	// get_blocks_with_info: (from,n) => {return [{start_block_num:from, count:n}]},
 
 	get_discussions_by_trending: _str2Obj,
 	get_discussions_by_created:	 _str2Obj,
@@ -64,6 +65,7 @@ methods: [
 			verify_authority:		["trx"],
 			verify_account_authority: ["name", "signers"],
 
+			get_database_info:		[],
 			get_vesting_delegations:	["account", "from", "?limit", "?type"],
 			get_expiring_vesting_delegations:	["account", "from", "?limit"],
 			get_proposed_transactions:	["name", "from", "limit"],
@@ -102,12 +104,12 @@ methods: [
 	},{
 		name: "social_network",
 		methods: {
-			get_content:			["author", "permlink", "?vote_limit"],
-			get_content_replies:	["parent", "parentPermlink", "?vote_limit"],
-			get_all_content_replies:["string", "permlink", "?vote_limit"],
+			get_content:			["author", "permlink", "?voteLimit"],
+			get_content_replies:	["parent", "parentPermlink", "?voteLimit"],
+			get_all_content_replies:["string", "permlink", "?voteLimit"],
 			get_active_votes:		["author", "permlink", "?limit"],
 			get_account_votes:		["voter", "?from", "?limit"],
-			get_replies_by_last_update:	["startAuthor", "startPermlink", "limit", "?vote_limit"],
+			get_replies_by_last_update:	["startAuthor", "startPermlink", "limit", "?voteLimit"],
 			// get_liquidity_queue:	["startAccount", "limit"],
 		}
 	},{
@@ -115,6 +117,7 @@ methods: [
 		methods: {
 			get_trending_tags:			["afterTag", "limit"],
 			get_tags_used_by_author:	["author"],
+			get_languages:				[],
 			get_discussions_by_trending:["query"],
 			get_discussions_by_created:	["query"],
 			get_discussions_by_active:	["query"],
@@ -127,7 +130,7 @@ methods: [
 			get_discussions_by_blog:	["query"],
 			get_discussions_by_comments:["query"],
 			get_discussions_by_promoted:["query"],
-			get_discussions_by_author_before_date: ["author", "startPermlink", "beforeDate", "limit"],
+			get_discussions_by_author_before_date: ["author", "startPermlink", "beforeDate", "limit", "?voteLimit"],
 		}
 	},{
 		name: "follow",
@@ -139,7 +142,7 @@ methods: [
 			get_feed:			["account", "entryId", "limit"],
 			get_blog_entries:	["account", "entryId", "limit"],
 			get_blog:			["account", "entryId", "limit"],
-			get_account_reputations: ["lowerBoundName", "?limit"],
+			get_account_reputations: ["accounts"],
 			get_reblogged_by:	["author", "permlink"],
 			get_blog_authors:	["blogAccount"],
 			get_accounts:		["names"],
@@ -164,6 +167,12 @@ methods: [
 			get_market_history:		["bucket_seconds" , "start", "end"],
 			get_market_history_buckets:	[],
 			get_open_orders:		["owner"],
+		}
+	},{
+		name: "private_message",
+		methods: {
+			get_inbox:		["to", "newest", "limit", "offset"],
+			get_outbox:		["from", "newest", "limit", "offset"],
 		}
 	}
 ]
