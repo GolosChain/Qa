@@ -1,6 +1,6 @@
 https://github.com/GolosChain/golos/issues/580
 
-1. Run daemon with enabled tags and `social_network`
+1. Run daemon with enabled `tags` and `social_network`
 2. Wait HF 18
 3. Run and prepare `cli_wallet`
 ```
@@ -18,7 +18,7 @@ create_account cyberfounder greg "{}" "300.000 GOLOS" true
 5. Create posts (with tags and without tags) and comments
 ```
 post_comment alice test "" ptest "Test change1" "<h1>changed 1!</h1><hr>test edit" "{}" true
-post_comment bob test "" ptest "Test change1" "<h1>changed 1!</h1><hr>test edit" "{\"tags\":[\"tag1\",\"tag2\"],"language":"RU"}" true
+post_comment bob test "" ptest "Test change1" "<h1>changed 1!</h1><hr>test edit" "{\"tags\":[\"tag1\",\"tag2\"],\"language\":\"RU\"}" true
 post_comment dave test alice test "Test change1" "<h1>changed 1!</h1><hr>test edit" "" true
 post_comment greg test bob test "Test change1" "<h1>changed 1!</h1><hr>test edit" "" true
 ```
