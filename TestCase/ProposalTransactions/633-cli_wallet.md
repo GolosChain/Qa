@@ -67,8 +67,21 @@ https://github.com/GolosChain/golos/issues/633
     get_proposed_transactions alice 0 10
     ```
 
-11. Remove approvals from previous step and add `alice` and `bob` approvals, check proposal applied and no more exist (result=[])
+11. Remove approvals from previous step and add `alice` and `bob` approvals, check proposal applied and no more exist (result=\[])
     ```
     approve_proposal alice test633 {"active_approvals_to_add":["alice", "bob"], "active_approvals_to_remove":["cyberfounder"], "key_approvals_to_remove":["GLS58g5rWYS3XFTuGDSxLVwiBiPLoAyCZgn6aB9Ueh8Hj5qwQA3r6"]} true
+    get_proposed_transactions alice 0 10
+    ```
+
+Alternative test. Repeat all steps, skipping 11 and apply 12 and 13 instead.
+
+12. Get bob's active public key (`result.active.key_auths[0]`)
+    ```
+    get_account bob
+    ```
+
+13. Add `alice` approval and `bob` active public key, check proposal applied and no more exist (result=\[])
+    ```
+    approve_proposal alice test633 {"active_approvals_to_add":["alice"], "key_approvals_to_add":["GLS5-bob-key-here"]} true
     get_proposed_transactions alice 0 10
     ```
