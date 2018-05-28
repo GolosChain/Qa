@@ -22,29 +22,6 @@
         "application/json"
     ],
     "paths": {
-        "/get_version": {
-            "get": {
-                "summary": "get version of Golos",
-                "description": "Returns version information of connected Golos node/websocket.\n",
-                "tags": [
-                    "Chain"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Result",
-                        "schema": {
-                            "$ref": "#/definitions/get_version"
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
         "/get_account_count": {
             "get": {
                 "summary": "number of accounts",
