@@ -63,7 +63,7 @@ curl --data '{"method":"call","params":["database_api","get_accounts",[["profile
 ```
 17. Sign transaction
 ```
-sign_transaction { "ref_block_num": 0,  "ref_block_prefix": 0, "expiration": "1970-01-01T00:00:00", "operations": [[ "account_metadata",{ "account": "profile", "json_metadata": "{\"name\":\"transaction\"}" } ] ], "extensions": [] }
+sign_transaction { "ref_block_num": 0,  "ref_block_prefix": 0, "expiration": "1970-01-01T00:00:00", "operations": [[ "account_metadata",{ "account": "profile", "json_metadata": "{\"name\":\"transaction\"}" } ] ], "extensions": [] } true
 ```
 18. Validate json metadata has changed
 ```
