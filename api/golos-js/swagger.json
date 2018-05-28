@@ -268,7 +268,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "good-kar"
+                        "default": "goloscore"
                     },
                     {
                         "name": "limit",
@@ -479,6 +479,15 @@
                 "summary": "witness_update",
                 "description": "witness_update\n",
                 "parameters": [
+					{
+                        "name": "wif",
+                        "in": "query",
+                        "description": "wif",
+                        "required": true,
+                        "type": "string",
+                        "format": "string",
+                        "default": ""
+                    },
                     {
                         "name": "owner",
                         "in": "query",
@@ -495,7 +504,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "https://steemit.com/created/goloscore"
+                        "default": "https://golos.io/created/goloscore"
                     },
                     {
                         "name": "block_signing_key",
@@ -504,16 +513,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "STM...."
-                    },
-                    {
-                        "name": "fee",
-                        "in": "query",
-                        "description": "fee.",
-                        "required": true,
-                        "type": "string",
-                        "format": "string",
-                        "default": "0.000"
+                        "default": "GLS6JShDSaVe9NVGW1ppyeGoyNQYZX7a5GDJshaTvTTKvjsTp1mMG"
                     },
                     {
                         "name": "props",
@@ -523,10 +523,20 @@
                         "type": "string",
                         "format": "string",
                         "default": "{\"account_creation_fee\":\"20.000 GOLOS\",\"maximum_block_size\":65536,\"sbd_interest_rate\":100}"
+                    },
+                    {
+                        "name": "fee",
+                        "in": "query",
+                        "description": "fee.",
+                        "required": true,
+                        "type": "string",
+                        "format": "string",
+                        "default": "0.000 GOLOS"
                     }
                 ],
                 "tags": [
-                    "Witness"
+                    "Witness",
+                    "Broadcast"
                 ],
                 "responses": {
                     "200": {
@@ -553,52 +563,6 @@
                 "description": "get_miner_queue\n",
                 "tags": [
                     "Witness"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Result",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/_"
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/get_liquidity_queue": {
-            "get": {
-                "summary": "get_liquidity_queue",
-                "description": "get_liquidity_queue\n",
-                "parameters": [
-                    {
-                        "name": "startAccount",
-                        "in": "query",
-                        "description": "account name.",
-                        "required": true,
-                        "type": "string",
-                        "format": "string",
-                        "default": "goloscore"
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "description": "limit.",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int32",
-                        "default": 10
-                    }
-                ],
-                "tags": [
-                    "Market"
                 ],
                 "responses": {
                     "200": {
@@ -1055,43 +1019,6 @@
                 }
             }
         },
-        "/get_discussions_by_trending30": {
-            "get": {
-                "summary": "get discussions",
-                "description": "get discussions, | query example {\"limit\":\"10\", \"tag\":\"goloscore\"} OR {\"start_author\":\"author\", \"permlink\":\"permlink\"} for pagination\n",
-                "parameters": [
-                    {
-                        "name": "query",
-                        "in": "query",
-                        "description": "query object.",
-                        "required": true,
-                        "type": "string",
-                        "format": "string",
-                        "default": "{\"tag\":\"goloscore\", \"limit\": \"10\"}"
-                    }
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Result",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/_"
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
         "/get_discussions_by_created": {
             "get": {
                 "summary": "get discussions",
@@ -1391,7 +1318,7 @@
         "/get_discussions_by_feed": {
             "get": {
                 "summary": "get discussions",
-                "description": "get discussions, | query example {\"limit\":\"10\", \"tags\":\"goloscore\"} OR {\"start_author\":\"author\", \"permlink\":\"permlink\"} for pagination\n",
+                "description": "get discussions, | query example {\"limit\":\"10\", \"select_authors\":[\"goloscore\"]} OR {\"start_author\":\"author\", \"permlink\":\"permlink\"} for pagination\n",
                 "parameters": [
                     {
                         "name": "query",
@@ -1400,7 +1327,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "{\"tag\":\"goloscore\", \"limit\": \"10\"}"
+                        "default": "{\"select_authors\":[\"goloscore\"], \"limit\": \"10\"}"
                     }
                 ],
                 "tags": [
@@ -1428,7 +1355,7 @@
         "/get_discussions_by_blog": {
             "get": {
                 "summary": "get discussions",
-                "description": "get discussions, | query example {\"limit\":\"10\", \"tag\":\"goloscore\"} OR {\"start_author\":\"author\", \"permlink\":\"permlink\"} for pagination\n",
+                "description": "get discussions, | query example {\"limit\":\"10\", \"select_authors\":[\"goloscore\"]} OR {\"start_author\":\"author\", \"permlink\":\"permlink\"} for pagination\n",
                 "parameters": [
                     {
                         "name": "query",
@@ -1437,7 +1364,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "{\"tag\":\"goloscore\", \"limit\": \"10\"}"
+                        "default": "{\"select_authors\":[\"goloscore\"], \"limit\": \"10\"}"
                     }
                 ],
                 "tags": [
@@ -1597,44 +1524,6 @@
                     }
                 ],
                 "tags": [
-                    "Post"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Result",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/_"
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/get_state": {
-            "get": {
-                "summary": "get_state",
-                "description": "get_state\n",
-                "parameters": [
-                    {
-                        "name": "path",
-                        "in": "query",
-                        "description": "account name.",
-                        "required": true,
-                        "type": "string",
-                        "format": "string",
-                        "default": "/@goloscore"
-                    }
-                ],
-                "tags": [
-                    "Account",
                     "Post"
                 ],
                 "responses": {
@@ -1989,7 +1878,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "good-kar"
+                        "default": "goloscore"
                     },
                     {
                         "name": "limit",
@@ -2911,216 +2800,6 @@
                         "name": "trx",
                         "in": "query",
                         "description": "transaction.",
-                        "type": "string",
-                        "format": "string"
-                    }
-                ],
-                "tags": [
-                    "Network"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Result",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/_"
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/set_max_block_age": {
-            "get": {
-                "summary": "WARNING: can only be used in Golos node or in scripts set_max_block_age\n",
-                "description": "set_max_block_age\n",
-                "parameters": [
-                    {
-                        "name": "maxBlockAge",
-                        "in": "query",
-                        "description": "maxBlockAge.",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int32"
-                    }
-                ],
-                "tags": [
-                    "Network"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Result",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/_"
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/set_subscribe_callback": {
-            "get": {
-                "summary": "WARNING: can only be used in Golos node or in scripts set_subscribe_callback\n",
-                "description": "set_subscribe_callback \n",
-                "parameters": [
-                    {
-                        "name": "callback",
-                        "in": "query",
-                        "description": "callback function.",
-                        "type": "string",
-                        "format": "string"
-                    },
-                    {
-                        "name": "clearFilter",
-                        "in": "query",
-                        "description": "clearFilter.",
-                        "type": "string",
-                        "format": "string"
-                    }
-                ],
-                "tags": [
-                    "Network"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Result",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/_"
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/set_pending_transaction_callback": {
-            "get": {
-                "summary": "WARNING: can only be used in Golos node or in scripts set_pending_transaction_callback\n",
-                "description": "set_pending_transaction_callback \n",
-                "parameters": [
-                    {
-                        "name": "cb",
-                        "in": "query",
-                        "description": "callback function.",
-                        "type": "string",
-                        "format": "string"
-                    }
-                ],
-                "tags": [
-                    "Network"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Result",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/_"
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/set_block_applied_callback": {
-            "get": {
-                "summary": "WARNING: can only be used in Golos node or in scripts set_block_applied_callback\n",
-                "description": "set_block_applied_callback \n",
-                "parameters": [
-                    {
-                        "name": "cb",
-                        "in": "query",
-                        "description": "callback function.",
-                        "type": "string",
-                        "format": "string"
-                    }
-                ],
-                "tags": [
-                    "Network"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Result",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/_"
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/cancel_all_subscriptions": {
-            "get": {
-                "summary": "WARNING: can only be used in Golos node or in scripts cancel_all_subscriptions\n",
-                "description": "cancel_all_subscriptions \n",
-                "tags": [
-                    "Network"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Result",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/_"
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/get_api_by_name": {
-            "get": {
-                "summary": "get_api_by_name",
-                "description": "get_api_by_name\n",
-                "parameters": [
-                    {
-                        "name": "apiName",
-                        "in": "query",
-                        "description": "apiName.",
-                        "required": true,
                         "type": "string",
                         "format": "string"
                     }
