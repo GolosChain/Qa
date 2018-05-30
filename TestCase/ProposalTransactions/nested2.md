@@ -94,12 +94,12 @@ add_operation_to_builder_transaction 0 ["proposal_update", {"author":"bob","titl
 propose_builder_transaction 0 bob level16 "" "2018-05-30T15:00:00" "1970-01-01T00:00:00" true
 ```
 
-2. Check that it exists
+3. Check that it exists
 ```
 get_proposed_transactions bob 0 10
 ```
 
-3. Approve it. Check that it applied
+4. Approve it. Check that it applied
 ```
 approve_proposal bob level16 {"active_approvals_to_add":["bob"]} true
 get_proposed_transactions bob 0 10
