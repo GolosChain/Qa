@@ -19,9 +19,8 @@ function MyReporter(runner) {
 	});
 
 	runner.on('end', function(tests) {
-		console.log('END ', tests);
+		console.log('TESTS END! Tests count: %d | passes: %d | failures: %d', passes + failures, passes, failures);
 		//console.log('tests: %d | passes: %d | failures: %d | start: %s | end: %s | duration: %ds', tests.reporter.stats.tests, tests.reporter.stats.passes, tests.reporter.stats.failures, tests.reporter.stats.start, tests.reporter.stats.end, (tests.reporter.stats.duration / 1000).toFixed(2));
-		//console.log('end: %d/%d', passes, passes + failures);
 		//process.exit(failures);
 	});
 	

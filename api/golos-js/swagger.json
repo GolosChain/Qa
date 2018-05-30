@@ -902,7 +902,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "smooth"
+                        "default": "goloscore"
                     },
                     {
                         "name": "permlink",
@@ -948,7 +948,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "smooth"
+                        "default": "goloscore"
                     },
                     {
                         "name": "permlink",
@@ -1401,7 +1401,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "{\"start_author\":\"smooth\",\"start_permlink\":\"test\",\"limit\":\"10\"}"
+                        "default": "{\"start_author\":\"goloscore\",\"limit\":\"10\"}"
                     }
                 ],
                 "tags": [
@@ -1438,7 +1438,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "smooth"
+                        "default": "goloscore"
                     },
                     {
                         "name": "startPermlink",
@@ -1447,7 +1447,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "test"
+                        "default": ""
                     },
                     {
                         "name": "beforeDate",
@@ -1456,7 +1456,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "2016-07-23T22:00:06"
+                        "default": "2018-01-22T10:00:00"
                     },
                     {
                         "name": "limit",
@@ -1502,7 +1502,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "smooth"
+                        "default": "goloscore"
                     },
                     {
                         "name": "startPermlink",
@@ -1511,7 +1511,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "test"
+                        "default": ""
                     },
                     {
                         "name": "limit",
@@ -1557,7 +1557,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "smooth"
+                        "default": "goloscore"
                     },
                     {
                         "name": "permlink",
@@ -1566,7 +1566,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "test"
+                        "default": "novosti-golos-core-status-khardfork-18-explorer-i-prilozheniya"
                     }
                 ],
                 "tags": [
@@ -1603,7 +1603,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "smooth"
+                        "default": "goloscore"
                     }
                 ],
                 "tags": [
@@ -1730,7 +1730,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "[\"goloscore\", \"fabien\"]"
+                        "default": "[\"goloscore\", \"golosio\"]"
                     }
                 ],
                 "tags": [
@@ -1832,16 +1832,16 @@
         "/lookup_account_names": {
             "get": {
                 "summary": "lookup_account_names",
-                "description": "lookup_account_names example of accountNames [\"goloscore\", \"fabien\"]\n",
+                "description": "lookup_account_names example of accountNames [\"goloscore\", \"golosio\"]\n",
                 "parameters": [
                     {
                         "name": "accountNames",
                         "in": "query",
-                        "description": "accountNames [\"goloscore\", \"fabien\"].",
+                        "description": "accountNames [\"goloscore\", \"golosio\"].",
                         "required": true,
                         "type": "string",
                         "format": "array",
-                        "default": "[\"goloscore\",\"fabien\"]"
+                        "default": "[\"goloscore\",\"golosio\"]"
                     }
                 ],
                 "tags": [
@@ -1970,7 +1970,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "fabien"
+                        "default": ""
                     },
                     {
                         "name": "followType",
@@ -2034,7 +2034,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "fabien"
+                        "default": ""
                     },
                     {
                         "name": "followType",
@@ -2134,15 +2134,16 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "clayop"
+                        "default": "goloscore"
                     },
                     {
                         "name": "withdrawRouteType",
                         "in": "query",
                         "description": "withdrawRouteType.",
                         "required": false,
-                        "type": "string",
-                        "format": "string"
+                        "type": "integer",
+                        "format": "int32",
+						"default": 0
                     }
                 ],
                 "tags": [
@@ -2186,8 +2187,9 @@
                         "in": "query",
                         "description": "bandwidthType.",
                         "required": false,
-                        "type": "string",
-                        "format": "string"
+                        "type": "integer",
+                        "format": "int32",
+						"default": 0
                     }
                 ],
                 "tags": [
@@ -2224,7 +2226,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "jesta"
+                        "default": "goloscore"
                     }
                 ],
                 "tags": [
@@ -2261,7 +2263,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "jesta"
+                        "default": "goloscore"
                     }
                 ],
                 "tags": [
@@ -2417,7 +2419,8 @@
                         "description": "transaction hex.",
                         "required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "{ \"ref_block_num\": 49191, \"ref_block_prefix\": 2024493436 }"
                     }
                 ],
                 "tags": [
@@ -2454,7 +2457,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": "b86745936b1e471c0efb78d0f80bd331f984d11f"
+                        "default": "d7abbd65b2c5b688e775bd90e784fa394c435fee"
                     }
                 ],
                 "tags": [
@@ -2490,7 +2493,8 @@
                         "description": "transaction.",
                         "required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "{ \"ref_block_num\": 49191, \"ref_block_prefix\": 2024493436 }"
                     },
                     {
                         "name": "availableKeys",
@@ -2498,7 +2502,8 @@
                         "description": "availableKeys.",
                         "required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "['GLS8bZakrQ9ETFcqMmebnQpDh3LAe8gFcivGMNRNzMbsvS2nCEcpx']"
                     }
                 ],
                 "tags": [
@@ -2534,7 +2539,8 @@
                         "description": "transaction.",
                         "required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "{ \"ref_block_num\": 49191, \"ref_block_prefix\": 2024493436 }"
                     }
                 ],
                 "tags": [
@@ -2570,7 +2576,8 @@
                         "description": "transaction.",
                         "required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "{ \"ref_block_num\": 49191, \"ref_block_prefix\": 2024493436 }"
                     }
                 ],
                 "tags": [
@@ -2606,7 +2613,8 @@
                         "description": "nameOrId.",
                         "required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "goloscore"
                     },
                     {
                         "name": "signers",
@@ -2614,7 +2622,8 @@
                         "description": "signers.",
                         "required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "['GLS8bZakrQ9ETFcqMmebnQpDh3LAe8gFcivGMNRNzMbsvS2nCEcpx']"
                     }
                 ],
                 "tags": [
@@ -2651,7 +2660,7 @@
                         "required": true,
                         "type": "string",
                         "format": "string",
-                        "default": ""
+                        "default": "['GLS6JShDSaVe9NVGW1ppyeGoyNQYZX7a5GDJshaTvTTKvjsTp1mMG', 'GLS6JShDSaVe9NVGW1ppyeGoyNQYZX7a5GDJshaTvTTKvjsTp1mMG']"
                     }
                 ],
                 "tags": [
@@ -2687,7 +2696,8 @@
                         "description": "transaction.",
                         "required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "{ \"ref_block_num\": 49191, \"ref_block_prefix\": 2024493436, \"operations\": [ [ 'get_confg' ] ] }"
                     }
                 ],
                 "tags": [
@@ -2723,7 +2733,8 @@
                         "description": "transaction.",
                         "required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "{ \"ref_block_num\": 49191, \"ref_block_prefix\": 2024493436, \"operations\": [ [ 'get_confg' ] ] }"
                     }
                 ],
                 "tags": [
@@ -2759,7 +2770,8 @@
                         "description": "block.",
                         "required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "{ \"ref_block_num\": 49191, \"ref_block_prefix\": 2024493436 }"
                     }
                 ],
                 "tags": [
@@ -2793,19 +2805,157 @@
                         "name": "confirmationCallback",
                         "in": "query",
                         "description": "confirmationCallback function.",
+						"required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": ""
                     },
                     {
                         "name": "trx",
                         "in": "query",
                         "description": "transaction.",
+						"required": true,
                         "type": "string",
-                        "format": "string"
+                        "format": "string",
+						"default": "{ \"ref_block_num\": 49191, \"ref_block_prefix\": 2024493436, \"operations\": [ [ 'get_confg' ] ] }"
                     }
                 ],
                 "tags": [
                     "Network"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Result",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/_"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+		"/getTicker": {
+            "get": {
+                "summary": "get_ticker",
+                "description": "receive statistic values of the internal GBG:GOLOS market for the last 24 hours",
+                "tags": [
+                    "Market"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Result",
+                        "schema": {
+                            "type": "integer",
+                            "items": {
+                                "$ref": "#/definitions/getTicker"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+		"/verify": {
+            "get": {
+                "summary": "verify",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "username.",
+                        "required": true,
+                        "type": "string",
+                        "format": "string",
+                        "default": "goloscore"
+                    },
+					{
+                        "name": "password",
+                        "in": "query",
+                        "description": "password.",
+                        "required": true,
+                        "type": "string",
+                        "format": "string",
+                        "default": "qwerty12345"
+                    },
+					{
+                        "name": "auths",
+                        "in": "query",
+                        "description": "auths.",
+                        "required": true,
+                        "type": "string",
+                        "format": "string",
+						"default": "{ \"posting\": [[ 'GLS6...' ]] }"
+                    }
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Result",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/_"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+		"/generate_keys": {
+            "get": {
+                "summary": "verify",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "username.",
+                        "required": true,
+                        "type": "string",
+                        "format": "string",
+                        "default": "goloscore"
+                    },
+					{
+                        "name": "password",
+                        "in": "query",
+                        "description": "password.",
+                        "required": true,
+                        "type": "string",
+                        "format": "string",
+                        "default": "qwerty12345"
+                    },
+					{
+                        "name": "roles",
+                        "in": "query",
+                        "description": "roles.",
+                        "required": true,
+                        "type": "string",
+                        "format": "string",
+						"default": "[ 'owner', 'active', 'posting', 'memo' ]"
+                    }
+                ],
+                "tags": [
+                    "Auth"
                 ],
                 "responses": {
                     "200": {

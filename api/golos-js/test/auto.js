@@ -12,6 +12,7 @@ golos.config.set('chain_id', '5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
 
 let currentMethodIndex = 0;
 let methodsListKeys = Object.keys(methodsList);
+let methodsListKeysLength = methodsListKeys.length;
 
 let camelCase = function(str) {
 	return str.replace(/_([a-z])/g, function(_m, l) {
@@ -49,11 +50,16 @@ let runTestMethod = function() {
 				let paramsStr = '';
 				if (method.get.parameters) {
 					method.get.parameters.forEach(function(param) {
-						paramsStr += getParamVal(param.type, param.default);
-						paramsStr += ', ';
+						if (param.required) {
+							paramsStr += getParamVal(param.type, param.default);
+							paramsStr += ', ';
+						}
 					});
 				}
-				let methodNameAndParams = `${method.get.tags.includes('Broadcast') ? 'broadcast' : 'api'}.${methodName}(${paramsStr}`;
+				let pluginName = 'api';
+				if (method.get.tags.includes('Broadcast')) pluginName = 'broadcast';
+				if (method.get.tags.includes('Auth')) pluginName = 'auth';
+				let methodNameAndParams = `${pluginName}.${methodName}(${paramsStr}`;
 				console.log(methodNameAndParams);
 				return await eval('golos.' + methodNameAndParams + `function(err, result) {
 					//if (err) console.error(err);
@@ -62,7 +68,7 @@ let runTestMethod = function() {
 			
 			afterEach(function() {
 				//console.log('title: ', this.currentTest.title, 'state: ', this.currentTest.state);
-				if (currentMethodIndex < methodsListKeys.length) runTestMethod();
+				if (currentMethodIndex < methodsListKeysLength) runTestMethod();
 			});
 			
 			/* afterAll(() => {
