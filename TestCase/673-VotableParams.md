@@ -18,22 +18,32 @@ sign_builder_transaction 0 true
 
 5. Wait 1 minute and check that `info` returns new values
 
-### 2. Check that median calculated correctly
+### 2. Check limits
 
-6. Create 2 more witness accounts
+6. Check that each of the following commands fails
+```
+update_witness cyberfounder localhost GLS58g5rWYS3XFTuGDSxLVwiBiPLoAyCZgn6aB9Ueh8Hj5qwQA3r6 {"account_creation_fee": "1.001 GOLOS", "create_account_with_golos_modifier":0, "create_account_delegation_ratio":3, "create_account_delegation_time":80001000000, "min_delegation_multiplier":9} true
+update_witness cyberfounder localhost GLS58g5rWYS3XFTuGDSxLVwiBiPLoAyCZgn6aB9Ueh8Hj5qwQA3r6 {"account_creation_fee": "1.001 GOLOS", "create_account_with_golos_modifier":25, "create_account_delegation_ratio":0, "create_account_delegation_time":80001000000, "min_delegation_multiplier":9} true
+update_witness cyberfounder localhost GLS58g5rWYS3XFTuGDSxLVwiBiPLoAyCZgn6aB9Ueh8Hj5qwQA3r6 {"account_creation_fee": "1.001 GOLOS", "create_account_with_golos_modifier":25, "create_account_delegation_ratio":3, "create_account_delegation_time":42299999999, "min_delegation_multiplier":9} true
+update_witness cyberfounder localhost GLS58g5rWYS3XFTuGDSxLVwiBiPLoAyCZgn6aB9Ueh8Hj5qwQA3r6 {"account_creation_fee": "1.001 GOLOS", "create_account_with_golos_modifier":25, "create_account_delegation_ratio":3, "create_account_delegation_time":80001000000, "min_delegation_multiplier":0} true
+```
+
+### 3. Check that median calculated correctly
+
+7. Create 2 more witness accounts
 ```
 create_account cyberfounder wi1 "" "200.000 GOLOS" true
 create_account cyberfounder wi2 "" "200.000 GOLOS" true
 ```
 
-7. Update witness parameters
+8. Update witness parameters
 ```
 update_witness cyberfounder localhost GLS58g5rWYS3XFTuGDSxLVwiBiPLoAyCZgn6aB9Ueh8Hj5qwQA3r6 {"account_creation_fee": "1.005 GOLOS", "create_account_with_golos_modifier":27, "create_account_delegation_ratio":8, "create_account_delegation_time":80001000000, "min_delegation_multiplier":9} true
 update_witness wi1 no GLS58g5rWYS3XFTuGDSxLVwiBiPLoAyCZgn6aB9Ueh8Hj5qwQA3r6 {"account_creation_fee": "1.006 GOLOS", "create_account_with_golos_modifier":20, "create_account_delegation_ratio":1, "create_account_delegation_time":60001000000, "min_delegation_multiplier":9} true
 update_witness wi2 no GLS58g5rWYS3XFTuGDSxLVwiBiPLoAyCZgn6aB9Ueh8Hj5qwQA3r6 {"account_creation_fee": "1.007 GOLOS", "create_account_with_golos_modifier":45, "create_account_delegation_ratio":7, "create_account_delegation_time":50001000000, "min_delegation_multiplier":20} true
 ```
 
-8. Wait 1 minute and check that median parameters set
+9. Wait 1 minute and check that median parameters set
 ```
 info
 ```
