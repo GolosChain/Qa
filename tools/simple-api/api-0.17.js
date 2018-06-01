@@ -3,6 +3,7 @@ API['0.17'] = {
 
 paramFixes: {
 	get_accounts: _csv2Arr,
+	get_witnesses: _csv2Arr,
 
 	// get_block_info: (from,n) => {return [{start_block_num:from, count:n}]},
 	// get_blocks_with_info: (from,n) => {return [{start_block_num:from, count:n}]},

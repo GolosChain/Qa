@@ -9,7 +9,7 @@ Simple browser tool to access Golos Websocket API. It doesn't need `golos.js` an
 1. Open `index.html` in browser
 2. Select node (and optionally change API version)
     * New nodes can be defined in `const NODES`
-3. Set api method parameters and click button with it's name to call method
+3. Set api method parameters and click button with it's name or press Enter to call method
 4. Results will appear in developer console
 
 **Note:** Simple auto-reconnect on connection lost supported.
@@ -25,11 +25,9 @@ except "parameters fixers" and "optional parameters".
 #### Optional parameters
 Optional parameter's name starts with `?` symbol:
 ```
-get_vesting_delegations:	["account", "from", "?limit", "?type"]
+get_vesting_delegations: ["account", "from", "?limit", "?type"]
 ```
 If such parameters not set (empty string), they will not be sent in request.
-
-**Note:** not all actually optional API parameters marked as optional in `api-{VERSION}.js`. Needs to be updated.
 
 #### Parameter fixers
 Most parameters are sent as string and transformed to required type inside node.
