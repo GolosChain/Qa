@@ -12,7 +12,7 @@ transfer cyberfounder bob "1.000 GOLOS" "" true
 ```
 
 ### 1. Approving with account having other's `account_auth`
-1. Give eve rights on bob's active signing. *Note: `key_auths` contains bob's public key*
+1. Give eve rights on bob's active signing. *Note: `key_auths` contains bob's public key, change to yours bob*
 ```
 begin_builder_transaction
 add_operation_to_builder_transaction 0 ["account_update", {"account":"bob", "active":{"weight_threshold":1,"account_auths":[["eve",1]],"key_auths":[["GLS7XejaKhPyLM4VzRGgHEf1X8ePqPFAV9CWNejjkN5u1MTDkUqik",1]]} }]
@@ -58,9 +58,18 @@ begin_builder_transaction
 add_operation_to_builder_transaction 3 ["account_update", {"account":"bob", "active":{"weight_threshold":1,"account_auths":[],"key_auths":[["GLS7XejaKhPyLM4VzRGgHEf1X8ePqPFAV9CWNejjkN5u1MTDkUqik",1]]}, "memo_key":"GLS6baBXnF24ff7mrhjh2eM2rCKsxcoPDTk9pWRX2WgDn6S5bsTG4" }]
 sign_builder_transaction 3 true
 ```
+Or via `golos.js` (change keys to yours):
+```
+let pk = MY_OWNER_PRIV_KEY;
+golos.broadcast.accountUpdate(pk, "bob",
+    {"weight_threshold":1, "account_auths":[], "key_auths": [["GLS58Qkuzxggkxsmrtwo9PyjuazFxLfqHE5z6HKoX5Bg5iQsvK19c",1]]},
+    {"weight_threshold":1, "account_auths":[], "key_auths": [["GLS7XejaKhPyLM4VzRGgHEf1X8ePqPFAV9CWNejjkN5u1MTDkUqik",1]]},
+    {"weight_threshold":1, "account_auths":[], "key_auths": [["GLS6npYVjGStnH9MYQqYuzqzm46B13bGTWa2UqYkLPiRo8Ywbo25r",1]]}, "GLS8cvhMx4BgbWnsjKNU1jVnUpLETPceDc1kY2GFsXqCHASqBWo1k", "{}", console.log)
+```
 
 7. Add alice and bob approvals to apply proposal
 ```
+get_proposed_transactions alice 0 10
 approve_proposal alice p671-2 {"active_approvals_to_add":["alice"]} true
 get_proposed_transactions alice 0 10
 approve_proposal alice p671-2 {"active_approvals_to_add":["bob"]} true
