@@ -1,4 +1,4 @@
-https://github.com/GolosChain/golos/issues/657
+https://github.com/GolosChain/golos/issues/697
 
 1. Set non-zero fee
 ```
