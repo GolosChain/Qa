@@ -1,9 +1,8 @@
 # BUG description #
-In 18.0 RC1 in `database.cpp` presented two following functions:
+In 18.0 RC1 in `database.cpp` presented these two functions:
 `update_account_bandwidth`
 and
-`old_update_account_bandwidth`
-After we've added vesting shares delegation in 18HF, `old_update_account_bandwidth` knew nothing about it. Thats why, when you tried to do something from delegatee account, you often could get the error: 
+`old_update_account_bandwidth`. After we've added vesting shares delegation in 18HF, `old_update_account_bandwidth` knew nothing about it. Thats why, when you tried to do something from delegatee account, you often could get the error: 
 ```
 	Assert Exception (10)
 	(account_vshares * max_virtual_bandwidth) > (account_average_bandwidth * total_vshares): Account exceeded maximum allowed bandwidth per vesting share.
@@ -12,7 +11,7 @@ which is totaly wrong. The solution was to remove `old_update_account_bandwidth`
 
 # Test case #
 
-The test case, which doesn't work in 18.0 RC1, but do work in 18.0 RC3:
+The test case, which doesn't work in 18.0 RC1, but does work in 18.0 RC3:
 
 1.
 	```
