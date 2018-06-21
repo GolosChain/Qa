@@ -33,11 +33,12 @@ table tbody tr:hover td	{background: rgba(255,255,200,.5)}
 <script>
 const NODES = [
 //	[url, name, ?version, ?default]
-	["wss://ws.golos.io",			"golos.io"],
+	["wss://ws.golos.io",			"golos.io", 18],
 	["wss://ws17.golos.io",			"ws17"],
+	["wss://ws18.golos.io",			"ws18", 18],
 	["wss://ws.testnet.golos.io",	"testnet", 18],
-	["wss://api.golos.cf",			"vik"],
-	["wss://api.golos.blckchnd.com/ws", "blckchnd"],
+	["wss://api.golos.cf",			"vik", 18],
+	["wss://api.golos.blckchnd.com/ws", "blckchnd", 18],
 	["ws://127.0.0.1:8091",			"localhost", 18, true],
 ];
 let w = new KWS(), ApiMethods = [], ApiParamsFix = {}, currentApi = '';
