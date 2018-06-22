@@ -143,8 +143,7 @@ If not all fields are filled, for example in case when you don't need to change 
     ```
     info
     ```
-Excepected result:
-
+    Excepected result:
     ```
     {
       "id": 0,
