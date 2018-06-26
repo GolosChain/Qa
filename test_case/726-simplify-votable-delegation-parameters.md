@@ -18,6 +18,14 @@ To simplify, we've changed this to absolute values:
 
 All this values can be set in GOLOS.
 
+
+param|description
+-|-
+`account_creation_fee` | Now it's used only in `create_account operation` (as in previous HF)
+`create_account_min_golos_fee` | When use `account_create_with_delegation` it's minimal fee (in GOLOS) creator should pay (+ he delegates `create_account_min_delegation` amount)
+`create_account_min_delegation` | When use `account_create_with_delegation` it's GP minimal delegation amount creator delegate to new account (can be reduced if `fee` > `create_account_min_golos_fee`)
+`min_delegation` | When anybody delegates, it's minimal delegated GP can be sent to delegatee
+
 # Test cases #
 
 Before all test cases you should sure that you have some valid parameters. If they are not. Just some small values. For instance:
