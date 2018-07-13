@@ -1,3 +1,4 @@
+
 # 796 Add depth history for storing comment contents #
 ## Description ##
 GolosChain had a scpecial building key `LOW_MEMORY` which used to reduce memory usage.
