@@ -55,7 +55,7 @@ function showApiMethods(v) {
 		h += `<h2>${N}</h2><table class="api-tbl">`;
 		for (var m in M) {
 			let p = M[m];
-			h += `<tr><td><button db="${N}" method="${m}" onclick="callMethod(this)">${m}</button></td>`;
+			h += `<tr id="${N}-${m}"><td><button db="${N}" method="${m}" onclick="callMethod(this)">${m}</button></td>`;
 			var params = '<i>no params</i>';
 			if (p && p.length) {
 				params = '';

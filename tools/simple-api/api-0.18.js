@@ -39,10 +39,8 @@ methods: [
         name: "database_api",
         methods: {
             //method: [params, ?optional]
-            // set_subscribe_callback: ["callback", "clearFilter"],
-            // set_pending_transaction_callback: ["cb"],
-            set_block_applied_callback: ["cb"],
-            // cancel_all_subscriptions: [],
+            set_block_applied_callback: ["type"],
+            set_pending_transaction_callback: [],
 
             get_block_header:       ["blockNum"],
             get_block:              ["blockNum"],
