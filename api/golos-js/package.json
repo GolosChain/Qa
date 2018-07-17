@@ -4,7 +4,7 @@
   "description": "",
   "main": "auto.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --exit --reporter mega test/auto.js"
   },
   "repository": {
     "type": "git",
