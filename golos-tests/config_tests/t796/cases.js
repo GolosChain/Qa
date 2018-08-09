@@ -18,7 +18,7 @@ const Cases = {
     // Case1:
     //      Try to create an account and make post from it.
     //      Check the post's presence and valid content fields.
-    case1: async (configData) => {
+    noParams: async (configData) => {
         let containerHash = '';
         try {
             logger.oklog("#case1::begin");
@@ -89,7 +89,7 @@ const Cases = {
     //          comment-json-metadata-depth = 0 
     //      Try to create an account and make post from it.
     //      Check the post's presence and make sure that content fields are empty.
-    case2 : async (configData) => {
+    doNotStoreContent: async (configData) => {
         let containerHash = '';
         try {
             await logger.oklog("#case2::begin");
@@ -163,7 +163,7 @@ const Cases = {
     //  comment-title-depth = 1000
     //  comment-body-depth = 0
     //  comment-json-metadata-depth = 0 
-    case3: async (configData) => {
+    depthLessThanCashout: async (configData) => {
         let containerHash = '';
         try {
             logger.oklog("#case3::begin");
@@ -258,7 +258,7 @@ const Cases = {
     //  comment-title-depth = 1250
     //  comment-body-depth = 0
     //  comment-json-metadata-depth = 0 
-    case4: async (configData) => {
+    depthGreaterThanCashout: async (configData) => {
         let containerHash = '';
         try {
             logger.oklog("#case4::begin");
@@ -354,7 +354,7 @@ const Cases = {
     //  comment-title-depth = 1250
     //  comment-body-depth = 1250
     //  comment-json-metadata-depth = 1250 
-    case5: async (configData) => {
+    allDepthGreaterThanCashout: async (configData) => {
         let containerHash = '';
         try {
             logger.oklog("#case5::begin");
@@ -457,7 +457,7 @@ const Cases = {
     //         comment-title-depth = 1250
     //         comment-body-depth = 1000
     //         comment-json-metadata-depth = 500
-    case6: async (configData) => {
+    allDepthsDiffer: async (configData) => {
         let containerHash = '';
         try {
             logger.oklog("#case6::begin");
@@ -505,7 +505,9 @@ const Cases = {
 
             let cashoutTime = fs_helper.parseUtcString(content.cashout_time);
             let createdTime = fs_helper.parseUtcString(content.created);
-            let expectedDeleteContentTime = new Date(createdTime.getTime() + 80 * 3 * 1000);
+
+            // TODO
+            let expectedDeleteContentTime = new Date(createdTime.getTime() + 80 * 3 * 1250);
           
             await fs_helper.waitConditionChange(()=> {
                 return fs_helper.compareDates(Date.now(), cashoutTime);
@@ -561,7 +563,7 @@ const Cases = {
     // comment-json-metadata-depth = 1000
     // set-content-storing-depth-null-after-update = true
 
-    case7: async (configData) => {
+    updateFlag: async (configData) => {
         let containerHash = '';
         try {
             logger.oklog("#case7::begin");
@@ -612,8 +614,8 @@ const Cases = {
             let cashoutTime = fs_helper.parseUtcString(content.cashout_time);
             let createdTime = fs_helper.parseUtcString(content.created);
             let timeOffset = 10 * 1000;
-            let expectedDeleteContentTime = new Date(createdTime.getTime() + 2 * 60 * 1000 + 30 * 3 * 1000 + timeOffset);
-            let timeBeforeUpdate = new Date(createdTime.getTime() + 2 * 60 * 1000);
+            let timeBeforeUpdate = new Date(createdTime.getTime() + 500 * 3 * 1000 + timeOffset);
+            let expectedDeleteContentTime = new Date(cashoutTime.getTime() + 500 * 3 * 1000 + timeOffset);
 
             logger.log('Times', {'timeBeforeUpdate' : timeBeforeUpdate, 'cashoutTime' : cashoutTime, 'createdTime' : createdTime, 'expectedDeleteContentTime' :expectedDeleteContentTime});
 
