@@ -29,7 +29,7 @@ const Cases = {
 
             containerHash = await docker_helper.runDockerContainer();
 
-            // Need to wait some time to make sure daemon've already started producing blocks
+            // Need to wait some time to make sure daemon's already started producing blocks
             await fs_helper.delay(6000);
 
             await fs_helper.waitConditionChange( async ()=> {
@@ -100,7 +100,7 @@ const Cases = {
             await docker_helper.setBlockLog();
             containerHash = await docker_helper.runDockerContainer();
 
-            // Need to wait some time to make sure daemon've already started producing blocks
+            // Need to wait some time to make sure daemon's already started producing blocks
             await fs_helper.delay(6000);
 
             await fs_helper.waitConditionChange( async ()=> {
@@ -174,7 +174,7 @@ const Cases = {
             await docker_helper.setBlockLog();
             containerHash = await docker_helper.runDockerContainer();
 
-            // Need to wait some time to make sure daemon've already started producing blocks
+            // Need to wait some time to make sure daemon's already started producing blocks
             await fs_helper.delay(6000);
 
             await fs_helper.waitConditionChange( async ()=> {
@@ -269,7 +269,7 @@ const Cases = {
             await docker_helper.setBlockLog();
             containerHash = await docker_helper.runDockerContainer();
 
-            // Need to wait some time to make sure daemon've already started producing blocks
+            // Need to wait some time to make sure daemon's already started producing blocks
             await fs_helper.delay(6000);
 
             await fs_helper.waitConditionChange( async ()=> {
@@ -365,7 +365,7 @@ const Cases = {
             await docker_helper.setBlockLog();
             containerHash = await docker_helper.runDockerContainer();
 
-            // Need to wait some time to make sure daemon've already started producing blocks
+            // Need to wait some time to make sure daemon's already started producing blocks
             await fs_helper.delay(6000);
 
             await fs_helper.waitConditionChange( async ()=> {
@@ -468,7 +468,7 @@ const Cases = {
             await docker_helper.setBlockLog();
             containerHash = await docker_helper.runDockerContainer();
 
-            // Need to wait some time to make sure daemon've already started producing blocks
+            // Need to wait some time to make sure daemon's already started producing blocks
             await fs_helper.delay(6000);
 
             await fs_helper.waitConditionChange( async ()=> {
@@ -506,9 +506,15 @@ const Cases = {
             let cashoutTime = fs_helper.parseUtcString(content.cashout_time);
             let createdTime = fs_helper.parseUtcString(content.created);
 
-            // TODO
             let timeOffset = 10 * 1000;
-            let expectedDeleteContentTime = new Date(createdTime.getTime() + 80 * 3 * 1250 + timeOffset);
+            let expectedDeleteContentTime = new Date(createdTime.getTime() + 1250 * 3 * 1000 + timeOffset);
+
+            logger.oklog("times", { 
+                "expectedDeleteContentTime" : expectedDeleteContentTime, 
+                "cashoutTime": cashoutTime,
+                "createdTime" : createdTime
+            });
+
           
             await fs_helper.waitConditionChange(()=> {
                 return fs_helper.compareDates(Date.now(), cashoutTime);
@@ -575,7 +581,7 @@ const Cases = {
             await docker_helper.setBlockLog();
             containerHash = await docker_helper.runDockerContainer();
 
-            // Need to wait some time to make sure daemon've already started producing blocks
+            // Need to wait some time to make sure daemon's already started producing blocks
             await fs_helper.delay(6000);
 
             await fs_helper.waitConditionChange( async ()=> {
