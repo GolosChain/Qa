@@ -60,8 +60,20 @@ async function waitConditionChange(cond, ts = 1000 * 3) {
     }
 }
 
+function toUpperCase( string ){
+    return string[1].toUpperCase();
+}
+
+// Need enhancement !!!
+const toCamel = (str) => {
+    str = str.toLowerCase().replace(/(_|-)([a-z1-9])/g, toUpperCase);
+    return str.replace(/_/g, "");
+}
+
+
 module.exports.getCurrentUtcTime = getCurrentUtcTime;
 module.exports.parseUtcString = parseISO8601String;
 module.exports.compareDates = compareDates;
 module.exports.delay = delay;
 module.exports.waitConditionChange = waitConditionChange;
+module.exports.toCamel = toCamel;

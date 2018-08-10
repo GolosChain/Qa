@@ -148,7 +148,7 @@ const setConfig = async (configData) => {
     // let configPath = path.resolve(config.volumeDataDir, './config.ini');
     let configPath = path.resolve(config.configDir, './config.ini');
     await fs.writeFileSync(configPath, configData);
-    logger.log('Config file was changed', {} );
+    logger.oklog('Config file was changed', {} );
   }
   catch(err) {
     logger.elog('Can not write to config file', { "error": err.message});

@@ -2,6 +2,7 @@ const config         =   require('@config')
 const logger         =   require('@logger')
 const fs             =   require('fs');
 const docker_helper  =   require('@docker_helper');
+const fs_helper      =   require('@fs_helper');
 
 
 const getFileName = (str) => {
@@ -24,14 +25,14 @@ var walkSync = function(dir, filelist, result) {
     filelist = filelist || [];
     files.forEach(function(file) {
         let pwd = path.join(dir, file);
-        if (/t\d+/.test(file)) {
+        if (/^\d+/.test(file)) {
             filelist = [];
         }
         if (fs.statSync(pwd).isDirectory()) {
 
             filelist = (walkSync(pwd, filelist,  result));
 
-            if (/t\d+/.test(file)) {
+            if (/^\d+/.test(file)) {
                 result[file] = {"path" : pwd, "files" : filelist};                
             }
         }
@@ -84,17 +85,12 @@ async function runTests(testsFolder, rootDir) {
                 Cases = await require(path).Cases;
                 casesPath = path;
             }
-            else if (/config(\s*|\d+)+.ini/.test(name)) {
+            else if (name.indexOf('config.ini') > -1) {
                 try {
                     let current_config = await fs.readFileSync(path);
-                    
-                    let splitRes = name.split(".");
-                    let idx =  splitRes[0].indexOf('g');
-                    let keyName = 'case' + splitRes[0].substr(idx + 1, splitRes[0].length);
-                    if (keyName == 'case') {
-                        keyName += '1'; 
-                    }
-                    configs[keyName] = await current_config.toString('utf8');
+                    let configKey = await name.split('config')[0];
+                    configKey = await fs_helper.toCamel(configKey);
+                    configs[configKey] = await current_config.toString('utf8');
                 }
                 catch(err) {
                     logger.elog("Failed reading file", {"err": err.message, "path" : path});
@@ -110,13 +106,8 @@ async function runTests(testsFolder, rootDir) {
         if (casesCfg == 'all') {
             let tmp_str = 'case';
             Cases = require(casesPath).Cases;
-            let casesCount = Object.keys(Cases).length;
-
-            for (let x = 1; x <= casesCount; ++x) {
-                let s = tmp_str + x.toString();
-                casesToRun.push(tmp_str + x)
-            }
-
+            // running All methods from Cases
+            casesToRun = Object.keys(Cases);
         }
         else if (casesCfg == null) {
             casesToRun = [];
@@ -164,7 +155,7 @@ async function runTests(testsFolder, rootDir) {
         for (let j = 0, sz = results.length; j < sz; j++) {
             statObj['case' + (j + 1)] = results[j];
         }
-        logger.log(testsFolder, {
+        logger.oklog(testsFolder, {
             'issue': statKeys[i],
             'statistics': statObj
         });
