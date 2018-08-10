@@ -26,7 +26,11 @@
   
   "config_tests" : {
     "796-add-storing-content-depth": {
-      "cases": ["noParams", "doNotStoreContent", "allDepthsDiffer"]
-    }  
+      "cases": null
+    },
+
+    "794-add-flag-for-storing-account-metadata": {
+      "cases": ["storeListedOnly", "storeListedWithoutAlice"]
+    }
   }
 }

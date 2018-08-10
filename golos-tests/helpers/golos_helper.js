@@ -11,7 +11,7 @@ const cyberfounderKey = config.cyberfounderKey;
 
 let OPERATIONS = [];
 
-async function createAccount(newAccountName, keys, creator, fee) {    
+async function createAccount(newAccountName, keys, creator, fee, jsonMetadata = '{}') {    
     /**
      * accountCreate() new account registration
      * @param {Base58} wif - private active key
@@ -41,7 +41,6 @@ async function createAccount(newAccountName, keys, creator, fee) {
       key_auths: [[keys.posting, 1]]
     };
     let memoKey = keys.memo;
-    let jsonMetadata = '{}';
     let wif = cyberfounderKey;
 
     golos.broadcast.accountCreate(wif, fee, creator, newAccountName, owner, active, posting, memoKey, jsonMetadata, function(err, result) {
