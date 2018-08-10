@@ -507,7 +507,8 @@ const Cases = {
             let createdTime = fs_helper.parseUtcString(content.created);
 
             // TODO
-            let expectedDeleteContentTime = new Date(createdTime.getTime() + 80 * 3 * 1250);
+            let timeOffset = 10 * 1000;
+            let expectedDeleteContentTime = new Date(createdTime.getTime() + 80 * 3 * 1250 + timeOffset);
           
             await fs_helper.waitConditionChange(()=> {
                 return fs_helper.compareDates(Date.now(), cashoutTime);
@@ -530,11 +531,11 @@ const Cases = {
             content = await golos.api.getContentAsync(author, permlink, 0);
 
             await assert(content.title == '');
-            logger.oklog("After 80 * 3 seconds title was cleaned: title is empty", {'title' : content.title});
+            logger.oklog("After 1250 * 3 seconds title was cleaned: title is empty", {'title' : content.title});
             await assert(content.body == '');
-            logger.oklog("After 80 * 3 seconds body was cleaned earlier: body is empty", {'body' : content.body});
+            logger.oklog("After 1250 * 3 seconds body was cleaned earlier: body is empty", {'body' : content.body});
             await assert(content.json_metadata == '');
-            logger.oklog("After 80 * 3 seconds json_metadata was cleaned: json_metadata is empty", {'json_metadata' : content.json_metadata});
+            logger.oklog("After 1250 * 3 seconds json_metadata was cleaned: json_metadata is empty", {'json_metadata' : content.json_metadata});
 
             await docker_helper.stopDockerContainer(containerHash);
             await docker_helper.rmDockerContainer(containerHash);

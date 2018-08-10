@@ -25,14 +25,14 @@ var walkSync = function(dir, filelist, result) {
     filelist = filelist || [];
     files.forEach(function(file) {
         let pwd = path.join(dir, file);
-        if (/t\d+/.test(file)) {
+        if (/^\d+/.test(file)) {
             filelist = [];
         }
         if (fs.statSync(pwd).isDirectory()) {
 
             filelist = (walkSync(pwd, filelist,  result));
 
-            if (/t\d+/.test(file)) {
+            if (/^\d+/.test(file)) {
                 result[file] = {"path" : pwd, "files" : filelist};                
             }
         }

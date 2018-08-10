@@ -19,14 +19,14 @@
   },
 
   "api_tests": {
-    "t647": {
+    "647-get-content-fix": {
       "cases": null
     }    
   },
   
   "config_tests" : {
-    "t796": {
-      "cases": ["case1", "case2"]
+    "796-add-storing-content-depth": {
+      "cases": ["noParams", "doNotStoreContent", "allDepthsDiffer"]
     }  
   }
 }
