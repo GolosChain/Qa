@@ -30,7 +30,7 @@
     },
 
     "794-add-flag-for-storing-account-metadata": {
-      "cases": ["storeListedOnly", "storeListedWithoutAlice"]
+      "cases": "all"
     }
   }
 }

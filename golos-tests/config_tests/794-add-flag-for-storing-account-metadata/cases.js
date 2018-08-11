@@ -236,7 +236,6 @@ const Cases = {
         let containerHash = '';
         try {
             logger.oklog("#case4-store-listed-without-alice::begin");
-            logger.log(configData)
             await docker_helper.cleanWitnessNodeDataDir();
             await docker_helper.setBlockLog();
             await docker_helper.setConfig(configData);
@@ -304,7 +303,6 @@ const Cases = {
         let containerHash = '';
         try {
             logger.oklog("#case5-store-nothing::begin");
-            logger.log(configData)
             await docker_helper.cleanWitnessNodeDataDir();
             await docker_helper.setBlockLog();
             await docker_helper.setConfig(configData);
