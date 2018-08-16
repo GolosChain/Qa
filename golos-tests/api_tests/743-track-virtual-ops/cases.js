@@ -18,7 +18,7 @@ const Cases = {
         try {
             await logger.oklog('case1: Starting testcase for set_block_applied_callback');
             
-            await fs_helper.delay(20000); // Wait for API available
+            await fs_helper.delay(6000); // Wait for API available
             
             await fs_helper.waitConditionChange( async ()=> {
                 let hf = await golos.api.getHardforkVersionAsync();
@@ -27,7 +27,9 @@ const Cases = {
 
             let OPERATIONS = [];
 
-            let res = await golos.api.sendAsync("database_api", {"method": "set_block_applied_callback", "params":["virtual_ops"]});
+            let res = [];
+
+            res = await golos.api.sendAsync("database_api", {"method": "set_block_applied_callback", "params":["virtual_ops"]});
 
             await logger.oklog("Block applied callback result is", res);
 
