@@ -22,6 +22,43 @@ Automated tests for Golos Testnet
 - `config_tests/t456/cases.js` -- test cases for 456 issue
 - `config_tests/t456/configs/config42.ini` -- config for 42 testcase of test for 456 issue
 
+## How to run the tests
+
+0.
+```
+sudo apt-get install nodejs
+npm install npm-run
+```
+
+1. Globally install Mocha, because tests are based on it. Instructions could be found in the Web.
+
+2. Being in `Qa` directory, run:
+```
+npm install golos-tests
+cd golos-tests
+```
+
+3. Check following keys in golos-tests/config.json:
+```
+containerName
+volumeDataDir
+configDir
+image
+```
+Container name and image name should be correct docker's ones.
+Directories should permit writing.
+
+4. Before running, you should stop and remove the docker container.
+```
+sudo docker stop golos1
+sudo docker rm golos1
+```
+
+5. Running of the tests (being in golos-tests):
+```
+npm-run mocha main.js
+```
+
 ## How to add a test
 Any new test have to be placed in folder `api_tests/` or `config_tests/`. Test cases in `config_test` are needed to test the daemon's behavior with different `config.ini` content and have to work with daemon (docker container) by themselves.
 Any test have to support following pattern:
