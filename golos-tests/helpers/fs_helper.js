@@ -70,7 +70,6 @@ const toCamel = (str) => {
     return str.replace(/_/g, "");
 }
 
-
 module.exports.getCurrentUtcTime = getCurrentUtcTime;
 module.exports.parseUtcString = parseISO8601String;
 module.exports.compareDates = compareDates;

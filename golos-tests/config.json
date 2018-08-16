@@ -9,7 +9,7 @@
   "containerName": "golos1",
   "volumeDataDir": "/home/anton/golos_tests/chain_data_01",
   "configDir": "/home/anton/golos_tests/config/",
-  "image": "goloschain/golos:v0.18.4preRC9-testnet",
+  "image": "goloschain/golos",
 
   "blocklogPath": "./share/golosd/blockchain/",
   "defaultConfigPath": "./share/golosd/config/debug_config.ini",

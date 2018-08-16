@@ -509,7 +509,7 @@ const Cases = {
             // TODO
             let timeOffset = 10 * 1000;
             let expectedDeleteContentTime = new Date(createdTime.getTime() + 80 * 3 * 1250 + timeOffset);
-          
+
             await fs_helper.waitConditionChange(()=> {
                 return fs_helper.compareDates(Date.now(), cashoutTime);
             });

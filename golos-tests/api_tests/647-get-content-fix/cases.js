@@ -20,6 +20,7 @@ const Cases = {
     case1: async () => {
         try {
             await logger.oklog('case1: Starting testcase');
+            await fs_helper.delay(20000);
             
             await fs_helper.waitConditionChange( async ()=> {
                 let hf = await golos.api.getHardforkVersionAsync();
