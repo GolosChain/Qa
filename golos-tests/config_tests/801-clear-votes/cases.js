@@ -269,7 +269,7 @@ const Cases = {
             }, 0);
 
 // Vote one time right before "beforeBlock"
-            await golos.broadcast.voteAsync(wifAlice, voters[9].name, alice, permlink, voteWeight);
+            await golos.broadcast.voteAsync(voters[9].wif, voters[9].name, alice, permlink, voteWeight);
             logger.oklog(voters[9].name + " voted for Alice post");
 
             votes = await golos.api.getActiveVotesAsync(alice, permlink, -1);
@@ -404,7 +404,7 @@ const Cases = {
             let offset = 6 * 1000; // 6 sec
             let rightBeforeCashoutTime = new Date(cashoutTime.getTime() - offset);
 
-            await logger.oklog(Times, {
+            await logger.oklog("Times", {
                 "createdTime"               : createdTime,
                 "rightBeforeCashoutTime"    : rightBeforeCashoutTime,
                 "cashoutTime"               : cashoutTime,
@@ -520,9 +520,7 @@ const Cases = {
             let fee             = '300.000 GOLOS';
 
             let wifAlice        = await golos.auth.toWif(alice, passwordAlice, 'posting');
-            let wifBob          = await golos.auth.toWif(bob, passwordBob, 'posting');
             let keysAlice       = await golos_helper.generateKeys(alice, passwordAlice);
-            let keysBob         = await golos_helper.generateKeys(alice, passwordAlice);
 
 
             let title           = 'Test Alice post title!';
@@ -575,7 +573,7 @@ const Cases = {
             let rightBeforeCashoutTime = new Date(cashoutTime.getTime() - offset);
             let rightBeforeN = new Date(blockNTime.getTime() - offset);
 
-            await logger.oklog(Times, {
+            await logger.oklog("Times", {
                 "createdTime"               : createdTime,
                 "rightBeforeCashoutTime"    : rightBeforeCashoutTime,
                 "cashoutTime"               : cashoutTime,
@@ -765,9 +763,7 @@ const Cases = {
             let fee             = '300.000 GOLOS';
 
             let wifAlice        = await golos.auth.toWif(alice, passwordAlice, 'posting');
-            let wifBob          = await golos.auth.toWif(bob, passwordBob, 'posting');
             let keysAlice       = await golos_helper.generateKeys(alice, passwordAlice);
-            let keysBob         = await golos_helper.generateKeys(alice, passwordAlice);
 
 
             let title           = 'Test Alice post title!';
@@ -812,14 +808,14 @@ const Cases = {
             let createdTime = fs_helper.parseUtcString(post.created);
             let cashoutTime = fs_helper.parseUtcString(post.cashout_time);
 
-            let blockN = 1200 / 4; // cashout (1200 blocks) / 2
+            let blockN = 1200 / 4; // cashout (1200 blocks) / 4
             let blockNMs = beforeBlock * 3 * 1000;// 600 * 3 sec/block * 1000 (ms) = 1800 sec 
             let blockNTime = new Date(createdTime.getTime() + blockNMs);
 
             let offset = 6 * 1000; // 6 sec
             let rightBeforeCashoutTime = new Date(cashoutTime.getTime() - offset);
 
-            await logger.oklog(Times, {
+            await logger.oklog("Times", {
                 "createdTime"               : createdTime,
                 "rightBeforeCashoutTime"    : rightBeforeCashoutTime,
                 "cashoutTime"               : cashoutTime,
