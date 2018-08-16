@@ -9,8 +9,6 @@ golos.config.set('chain_id', config.chain_id);
 
 const cyberfounderKey = config.cyberfounderKey;
 
-let OPERATIONS = [];
-
 async function createAccount(newAccountName, keys, creator, fee) {    
     /**
      * accountCreate() new account registration
@@ -58,7 +56,7 @@ async function generateKeys(userName, password) {
     const keys = await golos.auth.generateKeys(userName, password , ['posting', 'active', 'owner', 'memo']);
     return keys;
 }
-async function addCreateAccountOpertaion(userName, keys, creator, fee) {
+async function addCreateAccountOperation(OPERATIONS, userName, keys, creator, fee) {
 
     OPERATIONS.push(
         [ 'account_create',
@@ -91,7 +89,8 @@ async function addCreateAccountOpertaion(userName, keys, creator, fee) {
                 json_metadata: ''
             }
         ]
-    );    
+    ); 
+    return OPERATIONS;   
 };
 
 async function createPost(author, wif, permlink, parentPermlink, title, body, jsonMetadata) {
@@ -117,14 +116,14 @@ async function createPost(author, wif, permlink, parentPermlink, title, body, js
     });
 }
 
-function addCreatePost(author, permlink, parent_permlink, title, body, json_metadata) {
+function addCreatePost(OPERATIONS, author, permlink, parent_permlink, title, body, json_metadata) {
     let parentAuthor = '';
 
     OPERATIONS.push(
         [ 'comment',
             {
                 parent_author: parentAuthor,
-                parent_permlink: parentPermlink,
+                parent_permlink: parent_permlink,
                 author: author,
                 permlink: permlink,
                 title: title,
@@ -133,6 +132,7 @@ function addCreatePost(author, permlink, parent_permlink, title, body, json_meta
             }
         ]
     );
+    return OPERATIONS;
 }
 
 async function createComment(author, keys, permlink, parentAuthor, parentPermlink, body, title, jsonMetadata) {
@@ -157,7 +157,7 @@ async function createComment(author, keys, permlink, parentAuthor, parentPermlin
     });
 }
 
-function addCreateComment(author, permlink, parentAuthor, parentPermlink, body, title, jsonMetadata) {
+function addCreateComment(OPERATIONS, author, permlink, parentAuthor, parentPermlink, body, title, jsonMetadata) {
     OPERATIONS.push(
         [ 'comment',
             {
@@ -171,13 +171,14 @@ function addCreateComment(author, permlink, parentAuthor, parentPermlink, body, 
             }
         ]
     );
+    return OPERATIONS;
 }
 
-async function broadcastOperations() {
+async function broadcastOperations(OPERATIONS) {
     golos.broadcast.send(
         {
             extensions: [], 
-            OPERATIONS
+            operations: OPERATIONS
         }, [cyberfounderKey], function(err, res) {
             if (err) {
                 logger.log(err)
@@ -189,7 +190,7 @@ async function broadcastOperations() {
 }
 
 module.exports.createAccount = createAccount;
-module.exports.addCreateAccountOpertaion = addCreateAccountOpertaion;
+module.exports.addCreateAccountOperation = addCreateAccountOperation;
 module.exports.createPost = createPost;
 module.exports.addCreatePost = addCreatePost;
 module.exports.createComment = createComment;
