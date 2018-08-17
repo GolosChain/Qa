@@ -21,7 +21,10 @@
   "api_tests": {
     "647-get-content-fix": {
       "cases": null
-    }    
+    },
+    "743-track-virtual-ops": {
+      "cases": "all"
+    }
   },
   
   "config_tests" : {
