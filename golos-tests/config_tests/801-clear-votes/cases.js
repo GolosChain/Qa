@@ -163,7 +163,7 @@ const Cases = {
                 voters[i].wif = await golos.auth.toWif(voters[i].name, voters[i].password, 'posting');
             }
 
-            for (let i = 0, n = 9; i < n; i++) {
+            for (let i = 0, n = votersCount; i < n; i++) {
                 await golos_helper.createAccount(voters[i].name, voters[i].keys, cyberfounder, fee);
                 await fs_helper.delay(1000);
             }
@@ -379,7 +379,7 @@ const Cases = {
                 voters[i].wif = await golos.auth.toWif(voters[i].name, voters[i].password, 'posting');
             }
 
-            for (let i = 0, n = 9; i < n; i++) {
+            for (let i = 0, n = votersCount; i < n; i++) {
                 await golos_helper.createAccount(voters[i].name, voters[i].keys, cyberfounder, fee);
                 await fs_helper.delay(4000);
             }
@@ -547,9 +547,9 @@ const Cases = {
                 voters[i].wif = await golos.auth.toWif(voters[i].name, voters[i].password, 'posting');
             }
 
-            for (let i = 0, n = 9; i < n; i++) {
+            for (let i = 0, n = votersCount; i < n; i++) {
                 await golos_helper.createAccount(voters[i].name, voters[i].keys, cyberfounder, fee);
-                await fs_helper.delay(4000);
+                await fs_helper.delay(2000);
             }
             // Done
 
@@ -566,7 +566,7 @@ const Cases = {
             let cashoutTime = fs_helper.parseUtcString(post.cashout_time);
 
             let blockN = 1200 * 2; // cashout (1200 blocks) / 2
-            let blockNMs = beforeBlock * 3 * 1000;// 600 * 3 sec/block * 1000 (ms) = 1800 sec 
+            let blockNMs = blockN * 3 * 1000;// 600 * 3 sec/block * 1000 (ms) = 1800 sec 
             let blockNTime = new Date(createdTime.getTime() + blockNMs);
 
             let offset = 6 * 1000; // 6 sec
@@ -577,7 +577,7 @@ const Cases = {
                 "createdTime"               : createdTime,
                 "rightBeforeCashoutTime"    : rightBeforeCashoutTime,
                 "cashoutTime"               : cashoutTime,
-                "beforeBlockTime"           : beforeBlockTime
+                "blockNTime"                : blockNTime
             });
 
             // vote 5 times at the begining
@@ -733,11 +733,11 @@ const Cases = {
         }
     },
 
-
-    clearVotesOlderNSmallerСashout: async (configData) => {
+    
+    clearVotesOlderNSmallerCashout: async (configData) => {
         let containerHash = '';
         try {
-            logger.oklog("#case5-clearVotesOlderNSmallerСashout::begin");
+            logger.oklog("#case5-clearVotesOlderNSmallerCashout::begin");
 
             await docker_helper.cleanWitnessNodeDataDir();
             await docker_helper.setBlockLog();
@@ -790,7 +790,7 @@ const Cases = {
                 voters[i].wif = await golos.auth.toWif(voters[i].name, voters[i].password, 'posting');
             }
 
-            for (let i = 0, n = 9; i < n; i++) {
+            for (let i = 0, n = votersCount; i < n; i++) {
                 await golos_helper.createAccount(voters[i].name, voters[i].keys, cyberfounder, fee);
                 await fs_helper.delay(4000);
             }
@@ -809,7 +809,7 @@ const Cases = {
             let cashoutTime = fs_helper.parseUtcString(post.cashout_time);
 
             let blockN = 1200 / 4; // cashout (1200 blocks) / 4
-            let blockNMs = beforeBlock * 3 * 1000;// 600 * 3 sec/block * 1000 (ms) = 1800 sec 
+            let blockNMs = blockN * 3 * 1000;// 600 * 3 sec/block * 1000 (ms) = 1800 sec 
             let blockNTime = new Date(createdTime.getTime() + blockNMs);
 
             let offset = 6 * 1000; // 6 sec
@@ -819,10 +819,10 @@ const Cases = {
                 "createdTime"               : createdTime,
                 "rightBeforeCashoutTime"    : rightBeforeCashoutTime,
                 "cashoutTime"               : cashoutTime,
-                "beforeBlockTime"           : beforeBlockTime
+                "blockNTime"                : blockNTime
             });
             
-// ---------------- vote 10 times and check votes stored ---------------------------------
+            // ---------------- vote 10 times and check votes stored ---------------------------------
             // vote 5 times at the begining
             for (let i = 0, n = 5; i < n; i++) {
                 await golos.broadcast.voteAsync(voters[i].wif, voters[i].name, alice, permlink, voteWeight);
@@ -852,7 +852,7 @@ const Cases = {
 
             await golos.broadcast.voteAsync(voters[9].wif, voters[9].name, alice, permlink, voteWeight);
             await logger.oklog(voters[9].name + " voted for Alice post");
-// -------------------------go to 1 block before cashout and check 10 votes are stored-----------------
+            // -------------------------go to 1 block before cashout and check 10 votes are stored-----------------
             await fs_helper.waitConditionChange(()=> {
                 return fs_helper.compareDates(Date.now(), rightBeforeCashoutTime);
             }, 0);
@@ -862,7 +862,7 @@ const Cases = {
             logger.oklog("Current active votes:", votes);
             await assert(votes.length == 10);
             await delay(4000);
-// ------------------------- go to cashout block and check 8 votes were removed-----------------
+            // ------------------------- go to cashout block and check 8 votes were removed-----------------
 
             await fs_helper.waitConditionChange(()=> {
                 return fs_helper.compareDates(Date.now(), cashoutTime);
@@ -873,7 +873,7 @@ const Cases = {
             logger.oklog("Current active votes:", votes);
             await assert(votes.length == 2);
             
-// -------------- go forward just before last vote should be removed and check it stored ----------
+            // -------------- go forward just before last vote should be removed and check it stored ----------
             
             let beforeLastVoteDelete = new Date(cashoutTime.getTime() +  blockNMs - interval);
             await fs_helper.waitConditionChange(()=> {
@@ -886,7 +886,7 @@ const Cases = {
             await assert(votes.length == 1);
             
 
-// -------------- go 1 block forward and check all votes removed ----------------------------------
+            // -------------- go 1 block forward and check all votes removed ----------------------------------
 
             await delay(4000);
             // Check that only 0 votes are present.
@@ -899,11 +899,11 @@ const Cases = {
             await docker_helper.stopDockerContainer(containerHash);
             await docker_helper.rmDockerContainer(containerHash); 
 
-            logger.oklog("#case5-clearVotesOlderNSmallerСashout::success");
+            logger.oklog("#case5-clearVotesOlderNSmallerCashout::success");
             return true;
         }
         catch(err) {
-            logger.log("#case5-clearVotesOlderNSmallerСashout::failed with error", err.message);
+            logger.log("#case5-clearVotesOlderNSmallerCashout::failed with error", err.message);
 
             await docker_helper.stopDockerContainer(containerHash);
             await docker_helper.rmDockerContainer(containerHash);
