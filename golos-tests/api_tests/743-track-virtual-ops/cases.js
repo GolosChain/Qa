@@ -169,15 +169,17 @@ const Cases = {
             // And creating a callback
             // without any waiting
 
+            logger.oklog('Transaction applied callback should give result in few seconds');
+
             let res = await golos.api.sendAsync("database_api", {"method": "set_pending_transaction_callback", "params":[]});
             await fs_helper.delay(6000);
 
-            logger.oklog("Transaction applied callback result is", res);
+            logger.oklog('Transaction applied callback result is', res);
 
             await assert(jspath.apply('.operations{.[0] === "account_create" && .[1].new_account_name === "'
                 + authorTestAsync + '"}', res).length != 0);
 
-            logger.oklog("Transaction applied callback result is valid");
+            logger.oklog("And it is valid");
 
             //
 

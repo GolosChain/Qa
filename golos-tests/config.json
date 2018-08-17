@@ -24,12 +24,18 @@
     },
     "743-track-virtual-ops": {
       "cases": "all"
+    },
+    "752-dynamic-tags": {
+      "cases": "all"
+    },
+    "805-806-private-message": {
+      "cases": "all"
     }
   },
   
   "config_tests" : {
     "796-add-storing-content-depth": {
       "cases": ["noParams", "doNotStoreContent", "allDepthsDiffer"]
-    }  
+    }
   }
 }
