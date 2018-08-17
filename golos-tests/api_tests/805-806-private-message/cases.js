@@ -6,12 +6,12 @@ const jspath        =   require('jspath');
 const fs_helper     =   require('@fs_helper');
 const golos_helper  =   require('@golos_helper');
 const logger        =   require('@logger');
-const config        =   require("@config");
+const config        =   require('@config');
 const golos         =   require('golos-js');
 const assert        =   require('assert');
 
 golos.config.set('websocket', config.websocket);
-golos.config.set('address_prefix',config.address_prefix);
+golos.config.set('address_prefix', config.address_prefix);
 golos.config.set('chain_id', config.chain_id);
 
 const Cases = {
@@ -27,6 +27,7 @@ const Cases = {
             });
 
             let OPERATIONS = [];
+            let res = [];
 
             let cyberfounder = 'cyberfounder';
             let fee = '3.000 GOLOS';
@@ -34,7 +35,7 @@ const Cases = {
             // Creating test
 
             let authorTest = 'test';
-            let passwordTest = "test";
+            let passwordTest = 'test';
 
             let wifTest = golos.auth.toWif(authorTest, passwordTest, 'posting');
             let keysTest = await golos_helper.generateKeys(authorTest, passwordTest);
@@ -45,7 +46,7 @@ const Cases = {
             // Creating test2
 
             let authorTest2 = 'test2';
-            let passwordTest2 = "test2";
+            let passwordTest2 = 'test2';
 
             let wifTest2 = golos.auth.toWif(authorTest2, passwordTest2, 'posting');
             let keysTest2 = await golos_helper.generateKeys(authorTest2, passwordTest2);
@@ -53,36 +54,83 @@ const Cases = {
             await golos_helper.createAccount(authorTest2, keysTest2, cyberfounder, fee);
             await fs_helper.delay(6000);
 
-            // Message
+            // Sending message
 
             let nonce = new Date().getTime();
+            var json = JSON.stringify(['private_message', {
+                    from: authorTest,
+                    from_memo_key: keysTest.memo,
+                    to: authorTest2,
+                    to_memo_key: keysTest2.memo,
+                    nonce: nonce,
+                    update: false,
+                    encrypted_message: '12345678901234561234567890123456',	// TODO implement all cryptography
+                    checksum: 123						// or rewrite to cli_wallet
+                }]);
+            res = golos.broadcast.customJsonAsync(wifTest, [], [authorTest], 'private_message', json);
+            await logger.oklog('private_message result is', res);
 
-            OPERATIONS.push(['private_message', {
-                from: "test",
-                from_memo_key: "test",
-                to: "test2",
-                to_memo_key: "test2",
-                nonce: nonce,
-                update: false,
-                encrypted_message: [],
-                checksum: 123
-            }]);
+            // And creating a callback
+            // without any waiting
 
-            golos_helper.broadcastOperations(OPERATIONS);
+            logger.oklog('Message sent callback should give result in few seconds');
 
-            //let res = await golos.api.sendAsync("database_api", {"method": "set_block_applied_callback", "params":["virtual_ops"]});
+            res = await golos.api.sendAsync('private_message', {'method': 'set_callback', 'params':[{}]});
+            await fs_helper.delay(6000);
 
-            //await logger.oklog("Block applied callback result is", res);
+            logger.oklog('Message sent callback result is', res);
 
-            //await assert(jspath.apply('.operations{.op[0] === "producer_reward"}', res).length > 0);
+            await assert(jspath.apply('.message{.from === "' + authorTest + '"}', res).length == 1);
+            await assert(jspath.apply('.message{.to === "' + authorTest2 + '"}', res).length == 1);
+            await assert(jspath.apply('.message{.encrypted_message === "12345678901234561234567890123456"}', res).length == 1);
 
-            //await logger.oklog("Block applied callback result is valid");
+            await logger.oklog('And it is valid');
+
+            // Checking inbox of test
+
+            res = await golos.api.sendAsync('private_message', {'method': 'get_inbox', 'params':[authorTest2, {'filter_accounts': [authorTest]}]});
+            await fs_helper.delay(6000);
+
+            await logger.oklog('get_inbox result is', res);
+
+            await assert(res.length == 0);
+
+            await logger.oklog('And it is valid');
+
+            res = await golos.api.sendAsync('private_message', {'method': 'get_inbox', 'params':[authorTest2, {}]});
+            await fs_helper.delay(6000);
+
+            await logger.oklog('get_inbox without filter_accounts result is', res);
+
+            await assert(res.length > 0);
+
+            await logger.oklog('And it is valid');
+
+            // Checking outbox of test2
+
+            res = await golos.api.sendAsync('private_message', {'method': 'get_outbox', 'params':[authorTest, {'filter_accounts': [authorTest2]}]});
+            await fs_helper.delay(6000);
+
+            await logger.oklog('get_outbox result is', res);
+
+            await assert(res.length == 0);
+
+            await logger.oklog('And it is valid');
+
+            res = await golos.api.sendAsync('private_message', {'method': 'get_outbox', 'params':[authorTest, {}]});
+            await fs_helper.delay(6000);
+
+            await logger.oklog('get_outbox without filter_accounts result is', res);
+
+            await assert(res.length > 0);
+
+            await logger.oklog('And it is valid');
 
             await logger.oklog('case1: successfully passed');
             return true;
         }
         catch(err) {
-            await logger.log("case1: failed with error", err.message);
+            await logger.log('case1: failed with error', err.message);
             return false;
         }
     }
