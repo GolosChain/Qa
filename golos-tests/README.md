@@ -64,7 +64,7 @@ Any new test have to be placed in folder `api_tests/` or `config_tests/`. Test c
 Any test have to support following pattern:
 ```
 api_tests
-    └── t123 <-- 't' + Issue number
+    └── 123-add-important-feature <-- Issue number + test name
         └── cases.js <-- file with Cases
 
 ```
@@ -77,7 +77,7 @@ const logger        =   require('@logger');
 const assert        =   require('assert');
 
 const Cases = {
-    case1: async (data) => {
+    someTestcase: async (data) => {
         try {
             await logger.oklog('case1: Starting testcase');
 
@@ -100,7 +100,7 @@ module.exports.Cases = Cases;
 
 ## Important!
 - `test_runner` searhes exactly `cases.js` file and `Cases` object in it.
-- 'Cases' must contain test cases as functions with name 'case' + N, where N is from [1, inf).
+- `Cases` object must contain only functions with testscases
 - Any testcase from 'Cases' must return `true` in case of success and `false` in case of fail
 
 ## Config parameter
@@ -111,19 +111,19 @@ module.exports.Cases = Cases;
   },
 
   "api_tests": {
-    "t32": {
+    "32-some-bug-fix": {
       "cases": "all"
     },
-    "t24": {
-      "cases": ["case1", "case4", "case5"]
+    "24-yet-another-issue": {
+      "cases": ["noParamsTestCase", "checkThis", "checkThat"]
     },
-    "t18": {
+    "18-test-some-api": {
       "cases": null
     }
   },
   
   "config_tests" : {
-    "t796": {
+    "796-add-storing-content-dept": {
       "cases": "all"
     }  
   }
@@ -132,6 +132,43 @@ module.exports.Cases = Cases;
 As you can see there are 3 options:
 - "all" - all testcases would be run
 - null - none of testcases would be run
-- ["case1", "case4", "case5"] - only cases with numbers 1, 4, 5 would be run
+- ["noParamsTestCase", "checkThis", "checkThat"] - only cases with matching names would be run
 
 That makes possible to configure what issues and what testscases would be tested with by just editing config file. Nothing else is needed. 
+
+
+# Config tests
+
+The main demand for testcases of this group is to follow naming pattern:
+```
+const logger        =   require('@logger');
+const assert        =   require('assert');
+
+const Cases = {
+    // field name MUST be in camelCase
+    someTestcase: async (data) => {
+        try {
+            await logger.oklog('case1: Starting testcase');
+
+            await assert(2 * 2 == 4);
+
+            await logger.oklog('case1: Successfully passed');
+            return true;
+        }
+        catch(err) {
+            await logger.elog("case1: Failed with error", err.message);
+            return false;
+        }
+
+    }
+};
+
+module.exports.Cases = Cases;
+```
+
+And folder with test should look like this:
+```
+user@pc:~/Qa/golos-tests/config_tests/796-add-storing-content-depth$ ls
+cases.js  configs
+```
+And the config folder must contain all needed configs for testcases. For example for `someTestcase` config.ini file must be named `some_testcase_config.ini`.
