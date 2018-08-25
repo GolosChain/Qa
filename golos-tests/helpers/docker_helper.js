@@ -18,7 +18,6 @@ const runDockerContainer = async () => {
                         -v " + config.configDir.toString() + ":/etc/golosd \
                         " + config.image;
 
-
     let hash = '';
     let cmd = cp.exec(dockerCommand, {detached: false});
 
@@ -180,12 +179,45 @@ const setBlockLog = async () => {
   }
 };
 
+// Executes cli_wallet commands sequently one by one
+const runCliWalletScript = async (commands) => {
+  try {
+
+    let command = "sudo docker exec -i " + config.containerName + "\
+        /usr/local/bin/cli_wallet --server-rpc-endpoint=\"ws://127.0.0.1:8091\" \
+        --commands=\"" + commands + "\""
+
+    let done = false;
+    let cmd = cp.exec(command, {detached: false});
+
+    cmd.stdout.on('data', function (data) {
+      logger.log(data.toString('utf8'));
+    });
+
+    cmd.stderr.on('data', function (data) {
+      logger.log(data.toString('utf8'));
+    });
+
+    cmd.on('close', () => {
+      done = true;
+    });
+
+    await fs_helper.waitConditionChange( async ()=> {
+        return done;
+    }, 100);
+
+  }
+  catch(err) {
+    logger.elog("Executing cli_wallet script failed with error", err.message);
+  }
+};
 
 
-module.exports.runDockerContainer = runDockerContainer;
-module.exports.stopDockerContainer = stopDockerContainer;
-module.exports.rmDockerContainer = rmDockerContainer;
-module.exports.cleanWitnessNodeDataDir = cleanWitnessNodeDataDir;
-module.exports.setConfig = setConfig;
-module.exports.setDefaultConfig = setDefaultConfig;
-module.exports.setBlockLog = setBlockLog;
+module.exports.runDockerContainer         =     runDockerContainer;
+module.exports.stopDockerContainer        =     stopDockerContainer;
+module.exports.rmDockerContainer          =     rmDockerContainer;
+module.exports.cleanWitnessNodeDataDir    =     cleanWitnessNodeDataDir;
+module.exports.setConfig                  =     setConfig;
+module.exports.setDefaultConfig           =     setDefaultConfig;
+module.exports.setBlockLog                =     setBlockLog;
+module.exports.runCliWalletScript         =     runCliWalletScript;
