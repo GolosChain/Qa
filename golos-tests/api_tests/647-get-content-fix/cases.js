@@ -12,19 +12,19 @@ const config        =   require("@config");
 const golos         =   require('golos-js');
 const assert        =   require('assert');
 
-golos.config.set('websocket', config.websocket);
-golos.config.set('address_prefix',config.address_prefix);
-golos.config.set('chain_id', config.chain_id);
+golos.config.set('websocket', config.golosdProperties.websocket);
+golos.config.set('address_prefix',config.golosdProperties.address_prefix);
+golos.config.set('chain_id', config.golosdProperties.chain_id);
 
 const Cases = {
-    case1: async () => {
+    case1: async (containerName) => {
         try {
-            await logger.oklog('case1: Starting testcase');
+            logger.oklog('case1: Starting testcase');
             await fs_helper.delay(6000);
             
             await fs_helper.waitConditionChange( async ()=> {
                 let hf = await golos.api.getHardforkVersionAsync();
-                return parseInt(hf.split('.')[1]) == config.last_hardfork;
+                return parseInt(hf.split('.')[1]) == config.golosdProperties.last_hardfork;
             });
 
             let OPERATIONS = [];
@@ -38,7 +38,7 @@ const Cases = {
             let jsonMetadata = '{}';
             let permlink = 'test';
             let parentPermlink = 'ptest';
-            let cyberfounderKey = config.cyberfounderKey; 
+            let cyberfounderKey = config.golosdProperties.cyberfounderKey; 
 
             let wifAlice  = golos.auth.toWif(alice, passwordAlice, 'posting');
             let keysAlice = await golos_helper.generateKeys(alice, passwordAlice);
@@ -52,20 +52,20 @@ const Cases = {
             let res = await golos.api.getContentAsync(alice, permlink, 0);
             await fs_helper.delay(6000);
 
-            await assert(res.author == alice);
-            await assert(res.permlink == permlink);
-            await assert(res.category == parentPermlink);
-            await assert(res.title == title);
-            await assert(res.body == body);
-            await assert(res.json_metadata == jsonMetadata);
+            assert(res.author == alice);
+            assert(res.permlink == permlink);
+            assert(res.category == parentPermlink);
+            assert(res.title == title);
+            assert(res.body == body);
+            assert(res.json_metadata == jsonMetadata);
 
-            await logger.oklog("Get content returns valid result", res);
+            logger.oklog("Get content returns valid result", res);
 
-            await logger.oklog('case1: successfully passed');
+            logger.oklog('case1: successfully passed');
             return true;
         }
         catch(err) {
-            await logger.log("case1: failed with error", err.message);
+            logger.log("case1: failed with error", err.message);
             return false;
         }
     }

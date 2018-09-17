@@ -14,12 +14,11 @@ const config         =  require("@config");
 const runner         =  require('@tests_runner');
 const fs_helper      =  require('@fs_helper');
 const docker_helper  =  require('@docker_helper');
+const fs = require("fs");
 
 const run = async () => {
   await runner.runTests("api_tests", rootDir);
   await runner.runTests("config_tests", rootDir);
-
-  await process.exit(0);
 };
 
 run();

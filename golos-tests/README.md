@@ -79,15 +79,15 @@ const assert        =   require('assert');
 const Cases = {
     someTestcase: async (data) => {
         try {
-            await logger.oklog('case1: Starting testcase');
+            logger.oklog('case1: Starting testcase');
 
-            await assert(2 * 2 == 4);
+            assert(2 * 2 == 4);
 
-            await logger.oklog('case1: Successfully passed');
+            logger.oklog('case1: Successfully passed');
             return true;
         }
         catch(err) {
-            await logger.elog("case1: Failed with error", err.message);
+            logger.elog("case1: Failed with error", err.message);
             return false;
         }
 
@@ -148,15 +148,15 @@ const Cases = {
     // field name MUST be in camelCase
     someTestcase: async (data) => {
         try {
-            await logger.oklog('case1: Starting testcase');
+            logger.oklog('case1: Starting testcase');
 
-            await assert(2 * 2 == 4);
+            assert(2 * 2 == 4);
 
-            await logger.oklog('case1: Successfully passed');
+            logger.oklog('case1: Successfully passed');
             return true;
         }
         catch(err) {
-            await logger.elog("case1: Failed with error", err.message);
+            logger.elog("case1: Failed with error", err.message);
             return false;
         }
 

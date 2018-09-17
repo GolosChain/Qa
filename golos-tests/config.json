@@ -1,18 +1,36 @@
 {
-  "cyberfounderKey": "5JVFFWRLwz6JoP9kguuRFfytToGU6cLgBVTL9t6NB3D3BQLbUBS",
-  "last_hardfork": 18,
+  "golosdProperties" : {
+    "cyberfounderKey": "5JVFFWRLwz6JoP9kguuRFfytToGU6cLgBVTL9t6NB3D3BQLbUBS",
+    "last_hardfork": 18,
+    "websocket": "ws://0.0.0.0:8091",
+    "address_prefix": "GLS",
+    "chain_id": "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099de9deef6cdb679"
+  },
 
-  "websocket": "ws://0.0.0.0:8091",
-  "address_prefix": "GLS",
-  "chain_id": "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099de9deef6cdb679",
+  "defaultMongoDbAddress": "172.17.0.1:27017/Golos",
 
-  "containerName": "golos1",
-  "volumeDataDir": "/home/anton/golos_tests/chain_data_01",
-  "configDir": "/home/anton/golos_tests/config/",
-  "image": "goloschain/golos",
+  "defaultBuildName": "defaultDockerContainer-18-4",
 
-  "blocklogPath": "./share/golosd/blockchain/",
-  "defaultConfigPath": "./share/golosd/config/debug_config.ini",
+  "defaultDockerContainer-18-4" : {
+    "containerName": "golos-default-container",
+    "volumeDataDir": "/home/anton/golos_tests/default/chain_data_01",
+    "configDir": "/home/anton/golos_tests/default/config/",
+    "image": "goloschain/golos:v0.18.4preRC9-testnet",
+
+    "blocklogPath": "./share/default/golosd/blockchain/",
+    "defaultConfigPath": "./share/default/golosd/config/debug_config.ini"
+  },
+
+
+  "mongodbDockerContainer-18-4" : {
+    "containerName": "golos-mongodb-debug",
+    "volumeDataDir": "/home/anton/golos_tests/mongodb/chain_data_01",
+    "configDir": "/home/anton/golos_tests/mongodb/config/",
+    "image": "goloschain/golos-mongodb-debug-18-4",
+
+    "blocklogPath": "./share/mongo/golosd/blockchain/",
+    "defaultConfigPath": "./share/mongo/golosd/config/config_debug_mongo.ini"
+  },
 
   "api_unit_tests": {
 
@@ -23,19 +41,24 @@
       "cases": null
     },
     "743-track-virtual-ops": {
-      "cases": "all"
+      "cases": null
     },
     "752-dynamic-tags": {
-      "cases": "all"
+      "cases": null
     },
     "805-806-private-message": {
-      "cases": "all"
+      "cases": null
+    },
+    "867-add-comment-reward-object": {
+      "cases": "all",
+      "containerName": "mongodbDockerContainer-18-4"
     }
+
   },
   
   "config_tests" : {
     "796-add-storing-content-depth": {
-      "cases": ["noParams", "doNotStoreContent", "allDepthsDiffer"]
+      "cases": null
     }
   }
 }
