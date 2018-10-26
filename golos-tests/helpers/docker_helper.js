@@ -1,22 +1,23 @@
-const fs = require('fs');
-const logger = require('@logger');
-const config = require('@config');
-const fs_helper = require('@fs_helper');
-const cp = require('child_process');
-const path = require('path');
+const fs              =        require('fs');
+const logger          =        require('@logger');
+const config          =        require('@config');
+const fs_helper       =        require('@fs_helper');
+const cp              =        require('child_process');
+const path            =        require('path');
 
-const runDockerContainer = async () => {
+
+const runDockerContainer = async (buildName = config.defaultBuildName) => {
   try {
-    logger.oklog("Running docker container");
+    logger.oklog("Running docker container " + buildName);
 
-    let dockerCommand = "sudo docker run -d --name " + config.containerName + " \
+    let dockerCommand = "sudo docker run -d --name " + config[buildName].containerName + " \
                         -p 8090:8090 \
                         -p 8091:8091 \
                         -p 2001:2001 \
-                        -v " + config.volumeDataDir + ":/var/lib/golosd \
+                        -v " + config[buildName].volumeDataDir + ":/var/lib/golosd \
                         -e STEEMD_EXTRA_OPTS=--replay-blockchain \
-                        -v " + config.configDir.toString() + ":/etc/golosd \
-                        " + config.image;
+                        -v " + config[buildName].configDir + ":/etc/golosd \
+                        " + config[buildName].image;
 
     let hash = '';
     let cmd = cp.exec(dockerCommand, {detached: false});
@@ -86,7 +87,7 @@ const rmDockerContainer = async (hash) => {
     });
 
     await fs_helper.waitConditionChange( async ()=> {
-        return resultHash.length > 0;
+      return resultHash.length > 0;
     }, 500);
   }
   catch(err) {
@@ -94,12 +95,13 @@ const rmDockerContainer = async (hash) => {
   }
 };
 
-const cleanWitnessNodeDataDir = async () => {
+const cleanWitnessNodeDataDir = async (buildName = config.defaultBuildName) => {
   try {
-    await logger.oklog("Cleaning blockchain data dir");
-    let dockerCommand = "rm -r " + config.volumeDataDir + "/blockchain/ \
-      " + config.volumeDataDir + "/logs/ \
-      " + config.volumeDataDir + "/p2p/";
+    logger.oklog("Cleaning blockchain data dir");
+    let dockerCommand = "rm -r " +
+          config[buildName].volumeDataDir + "/blockchain/ \
+      " + config[buildName].volumeDataDir + "/logs/ \
+      " + config[buildName].volumeDataDir + "/p2p/";
 
     let done = false;
     let cmd = cp.exec(dockerCommand, {detached: false});
@@ -113,7 +115,7 @@ const cleanWitnessNodeDataDir = async () => {
     });
 
     await fs_helper.waitConditionChange( async ()=> {
-        return done;
+      return done;
     }, 100);
   }
   catch(err) {
@@ -121,32 +123,13 @@ const cleanWitnessNodeDataDir = async () => {
   }
 };
 
-const setDefaultConfig = async () => {
+const setConfig = async (configData, buildName = config.defaultBuildName) => {
   try {
-    await logger.oklog("Changing config.ini file");
+    logger.oklog("Changing config.ini file");
 
-    let defaultConfigPath = path.resolve(defaultConfigPath, './config.ini');
-
-    let dockerConfigPath = path.resolve(configDir, './config.ini');
-
-    fs.writeFileSync(dockerConfigPath, configData);
-    logger.log('Config file was changed', {} );
-
-    await fs_helper.waitConditionChange( async ()=> {
-        return done;
-    }, 100);
-  }
-  catch(err) {
-    logger.elog('Can not write to config file', { "error": err.message});
-  }
-};
-
-const setConfig = async (configData) => {
-  try {
-    await logger.oklog("Changing config.ini file");
-    // let configPath = path.resolve(config.volumeDataDir, './config.ini');
-    let configPath = path.resolve(config.configDir, './config.ini');
+    let configPath = path.resolve(config[buildName].configDir, './config.ini');
     await fs.writeFileSync(configPath, configData);
+
     logger.oklog('Config file was changed', {} );
   }
   catch(err) {
@@ -154,10 +137,10 @@ const setConfig = async (configData) => {
   }
 };
 
-const setBlockLog = async () => {
+const setBlockLog = async (buildName = config.defaultBuildName) => {
   try {
     await logger.oklog("Adding block log");
-    let dockerCommand = 'cp -r ' + config.blocklogPath + ' ' + config.volumeDataDir;
+    let dockerCommand = 'cp -r ' + config[buildName].blocklogPath + ' ' + config[buildName].volumeDataDir;
 
     let done = false;
     let cmd = cp.exec(dockerCommand, {detached: false});
@@ -180,10 +163,10 @@ const setBlockLog = async () => {
 };
 
 // Executes cli_wallet commands sequently one by one
-const runCliWalletScript = async (commands) => {
+const runCliWalletScript = async (commands, buildName = config.defaultBuildName) => {
   try {
 
-    let command = "sudo docker exec -i " + config.containerName + "\
+      let command = "sudo docker exec -i " + config[buildName].containerName + "\
         /usr/local/bin/cli_wallet --server-rpc-endpoint=\"ws://127.0.0.1:8091\" \
         --commands=\"" + commands + "\""
 
@@ -191,11 +174,11 @@ const runCliWalletScript = async (commands) => {
     let cmd = cp.exec(command, {detached: false});
 
     cmd.stdout.on('data', function (data) {
-      logger.log(data.toString('utf8'));
+      logger.wlog(data.toString('utf8'));
     });
 
     cmd.stderr.on('data', function (data) {
-      logger.log(data.toString('utf8'));
+      logger.oklog(data.toString('utf8'));
     });
 
     cmd.on('close', () => {
@@ -213,11 +196,45 @@ const runCliWalletScript = async (commands) => {
 };
 
 
+const restartMongoService = async () => {
+  try {
+    logger.oklog("Restarting Mongo service");
+
+    let command = "sudo systemctl start mongodb"
+    let done = false;
+    let cmd = cp.exec(command, {detached: false});
+
+    cmd.stdout.on('data', function (data) {
+      logger.wlog(data.toString('utf8'));
+    });
+
+    cmd.stderr.on('data', function (data) {
+      logger.oklog(data.toString('utf8'));
+    });
+
+    cmd.on('close', () => {
+      done = true;
+    });
+
+    await fs_helper.waitConditionChange( async ()=> {
+        return done;
+    }, 100);
+
+  }
+  catch(err) {
+    logger.elog("Restarting Mongo service with command \
+        `sudo systemctl start mongodb`\
+        failed with error", err.message);
+  }
+};
+
+
+
 module.exports.runDockerContainer         =     runDockerContainer;
 module.exports.stopDockerContainer        =     stopDockerContainer;
 module.exports.rmDockerContainer          =     rmDockerContainer;
 module.exports.cleanWitnessNodeDataDir    =     cleanWitnessNodeDataDir;
 module.exports.setConfig                  =     setConfig;
-module.exports.setDefaultConfig           =     setDefaultConfig;
 module.exports.setBlockLog                =     setBlockLog;
 module.exports.runCliWalletScript         =     runCliWalletScript;
+module.exports.restartMongoService        =     restartMongoService;

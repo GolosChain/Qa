@@ -17,8 +17,9 @@
   },
   "homepage": "https://github.com/GolosChain/Qa/golos-tests#readme",
   "dependencies": {
-    "module-alias": "^2.1.0",
+    "golos-js": "^0.7.2",
     "jspath": "^0.4.0",
-    "golos-js": "^0.7.2"
+    "module-alias": "^2.1.0",
+    "mongodb": "^3.1.6"
   }
 }

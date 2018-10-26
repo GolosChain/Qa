@@ -3,11 +3,11 @@ const golos = require('golos-js');
 const logger = require('@logger');
 const config = require('@config');
 
-golos.config.set('websocket', config.websocket);
-golos.config.set('address_prefix',config.address_prefix);
-golos.config.set('chain_id', config.chain_id);
+golos.config.set('websocket', config.golosdProperties.websocket);
+golos.config.set('address_prefix',config.golosdProperties.address_prefix);
+golos.config.set('chain_id', config.golosdProperties.chain_id);
 
-const cyberfounderKey = config.cyberfounderKey;
+const cyberfounderKey = config.golosdProperties.cyberfounderKey;
 
 async function createAccount(newAccountName, keys, creator, fee) {    
     /**

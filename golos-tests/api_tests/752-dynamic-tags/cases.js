@@ -9,20 +9,20 @@ const config        =   require("@config");
 const golos         =   require('golos-js');
 const assert        =   require('assert');
 
-golos.config.set('websocket', config.websocket);
-golos.config.set('address_prefix',config.address_prefix);
-golos.config.set('chain_id', config.chain_id);
+golos.config.set('websocket', config.golosdProperties.websocket);
+golos.config.set('address_prefix',config.golosdProperties.address_prefix);
+golos.config.set('chain_id', config.golosdProperties.chain_id);
 
 const Cases = {
     case1: async () => {
         try {
-            await logger.oklog('case1: Starting testcase for tags number');
+            logger.oklog('case1: Starting testcase for tags number');
             
             await fs_helper.delay(6000); // Wait for API available
             
             await fs_helper.waitConditionChange( async ()=> {
                 let hf = await golos.api.getHardforkVersionAsync();
-                return parseInt(hf.split('.')[1]) == config.last_hardfork;
+                return parseInt(hf.split('.')[1]) == config.golosdProperties.last_hardfork;
             });
 
             let OPERATIONS = [];
@@ -81,19 +81,19 @@ const Cases = {
 
             res = await golos.api.getTrendingTagsAsync("", 100);
 
-            await logger.oklog("Get trending tags result is", res);
+            logger.oklog("Get trending tags result is", res);
 
             var res_wrap = {"result": res};
 
             await assert(jspath.apply(".result", res_wrap).length == start_tags_count + 1);
 
-            await logger.oklog("Get trending tags result is valid");
+            logger.oklog("Get trending tags result is valid");
 
-            await logger.oklog('case1: successfully passed');
+            logger.oklog('case1: successfully passed');
             return true;
         }
         catch(err) {
-            await logger.log("case1: failed with error", err.message);
+            logger.log("case1: failed with error", err.message);
             return false;
         }
     }

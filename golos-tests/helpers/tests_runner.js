@@ -3,46 +3,13 @@ const logger         =   require('@logger')
 const fs             =   require('fs');
 const docker_helper  =   require('@docker_helper');
 const fs_helper      =   require('@fs_helper');
-
-
-const getFileName = (str) => {
-    return str.split('/').slice(-1)[0]
-};
-
-const cutExtention = (str) => {
-    return str.split('.')[0]
-};
-
-const getFolderName = (path) => {
-    return path.split('/').slice(-2)[0];
-};
-
-var walkSync = function(dir, filelist, result) {
-    var path = path || require('path');
-    var fs = fs || require('fs'),
-        files = fs.readdirSync(dir);
-
-    filelist = filelist || [];
-    files.forEach(function(file) {
-        let pwd = path.join(dir, file);
-        if (/^\d+/.test(file)) {
-            filelist = [];
-        }
-        if (fs.statSync(pwd).isDirectory()) {
-
-            filelist = (walkSync(pwd, filelist,  result));
-
-            if (/^\d+/.test(file)) {
-                result[file] = {"path" : pwd, "files" : filelist};                
-            }
-        }
-        else {
-            filelist.push(path.join(dir, file));
-        }
-    });
-    return filelist;
-};
-
+/*
+ *  runTests -- this function parses config.json file,
+ *              collects all data to run every test
+ *              one by one. 
+ * @param testsFolder -- folder with testcases sources
+ * @param rootDir
+ */
 async function runTests(testsFolder, rootDir) {
     let testsDir = rootDir + '/' + testsFolder;
     let testsList = {};
@@ -55,9 +22,10 @@ async function runTests(testsFolder, rootDir) {
 
     for (let i = 0; i < len; i++) {
         testsList[keys[i]].cases = config[testsFolder][keys[i]]["cases"];
+        testsList[keys[i]].containerName = config[testsFolder][keys[i]].containerName;
     }
 
-    await logger.oklog("Running " + testsFolder +"...");
+    logger.oklog("Running " + testsFolder +"...");
 
     let containerHash = '';
 
@@ -100,7 +68,7 @@ async function runTests(testsFolder, rootDir) {
 // There are three possible value for 'cases' field in config.json file:
 // 1. 'all' -- means that ALL the testscases from cases.js will be run
 // 2. 'null' -- means that this test will be ignored
-// 3. ['caseN', ... , 'caseM'] -- means that only tests listed in array will be run
+// 3. ['someTestCase', ... , 'someOtherTestCase'] -- means that only tests listed in array will be run
         let casesCfg = test.cases;
 
         if (casesCfg == 'all') {
@@ -120,21 +88,44 @@ async function runTests(testsFolder, rootDir) {
 
 // RUNNNING TESTS
         if (casesToRun.length == 0) {
-            await logger.oklog('Ignoring tests for ' + issueName + '.', {'cases': casesToRun} );
+            logger.oklog('Ignoring tests for ' + issueName + '.', {'cases': casesToRun} );
         }
         else {
-            // If tests do not need hypervising thet golosd must be executed outside of tests
+            // If tests do not need hypervising then golosd must be executed outside of tests
+            // But there are some testcases which do need 
+            let containerName;
+
             if (testsFolder == 'api_tests') {
-                await docker_helper.cleanWitnessNodeDataDir();
-                await docker_helper.setBlockLog();
-                containerHash = await docker_helper.runDockerContainer();
+                if (test.containerName != undefined) {
+                    containerName = test.containerName;
+                }
+                else {
+                    containerName = config.defaultBuildName;
+                }
+
+                if (containerName.indexOf("mongo") > -1) {
+                    await docker_helper.restartMongoService();
+                }
+                await docker_helper.cleanWitnessNodeDataDir(containerName);
+                await docker_helper.setBlockLog(containerName);
+                containerHash = await docker_helper.runDockerContainer(containerName);
             }
 
+            
             testsStatistics[issueName] = [];
-            await logger.oklog('Running tests for ' + issueName + '. Following tests will be executed:', {'cases': casesToRun} );
+            logger.oklog('Running tests for ' + issueName + '. Following tests will be executed:', {'cases': casesToRun} );
+
             for (let i = 0, len = casesToRun.length; i < len; i++) {
-                let isSuccessfull = await Cases[casesToRun[i]](configs[casesToRun[i]]);
-                testsStatistics[issueName].push(isSuccessfull);
+                if (testsFolder == 'api_tests') {
+                    let isSuccessfull = await Cases[casesToRun[i]](containerName);
+                    testsStatistics[issueName].push(isSuccessfull);
+                }
+
+                if (testsFolder == 'config_tests') {
+                    let isSuccessfull = await Cases[casesToRun[i]](configs[casesToRun[i]]);
+                    testsStatistics[issueName].push(isSuccessfull);
+                }
+                    
             }
 
             // If tests do not need hypervising thet golosd must be also stoped outside of tests
@@ -142,7 +133,7 @@ async function runTests(testsFolder, rootDir) {
                 await docker_helper.stopDockerContainer(containerHash);
                 await docker_helper.rmDockerContainer(containerHash); 
             }
-            await logger.oklog('Done with ' + issueName + ' tests.');
+            logger.oklog('Done with ' + issueName + ' tests.');
         }
 
     }
@@ -160,7 +151,43 @@ async function runTests(testsFolder, rootDir) {
             'statistics': statObj
         });
     }
-    await logger.oklog('Done with ' + testsFolder);
+    logger.oklog('Done with ' + testsFolder);
+};
+
+
+const getFileName = (str) => {
+    return str.split('/').slice(-1)[0]
+};
+
+const getFolderName = (path) => {
+    return path.split('/').slice(-2)[0];
+};
+
+var walkSync = function(dir, filelist, result) {
+    var path = path || require('path');
+    var fs = fs || require('fs'),
+        files = fs.readdirSync(dir);
+
+    filelist = filelist || [];
+    files.forEach(function(file) {
+        let pwd = path.join(dir, file);
+        if (/^\d+/.test(file)) {
+            filelist = [];
+        }
+        if (fs.statSync(pwd).isDirectory()) {
+
+            filelist = (walkSync(pwd, filelist,  result));
+
+            if (/^\d+/.test(file)) {
+                result[file] = {"path" : pwd, "files" : filelist};
+            }
+        }
+        else {
+            filelist.push(path.join(dir, file));
+        }
+    });
+    return filelist;
 };
 
 module.exports.runTests = runTests;
+
