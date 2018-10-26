@@ -61,16 +61,27 @@ const Cases = {
         });
       });
 
+      // await fs_helper.delay(60 * 2 * 1000);
+
       await fs_helper.waitConditionChange( async ()=> {
         return mongoResponse != {};
       });
 
       await logger.log("mongoResponse", mongoResponse);
       await logger.log("apiResponse", apiResponse);
-// TODO FIX dates bug
-      assert(mongoResponse.last_update == apiResponse.last_update);
-      assert(mongoResponse.active == apiResponse.active);
-      assert(mongoResponse.created == apiResponse.created);
+
+      logger.log("mongoResponse.last_update", mongoResponse.last_update);
+      logger.log("mongoResponse.active", mongoResponse.active);
+      logger.log("mongoResponse.created", mongoResponse.created);
+      logger.log("");
+      logger.log("apiResponse.last_update", fs_helper.parseUtcString(apiResponse.last_update));
+      logger.log("apiResponse.active", fs_helper.parseUtcString(apiResponse.active));
+      logger.log("apiResponse.created", fs_helper.parseUtcString(apiResponse.created));
+
+
+      assert(mongoResponse.last_update == fs_helper.parseUtcString(apiResponse.last_update));
+      assert(mongoResponse.active == fs_helper.parseUtcString(apiResponse.active));
+      assert(mongoResponse.created == fs_helper.parseUtcString(apiResponse.created));
 
       logger.oklog('case1: successfully passed');
       return true;

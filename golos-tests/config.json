@@ -41,16 +41,16 @@
       "cases": null
     },
     "743-track-virtual-ops": {
-      "cases": null
+      "cases": "all"
     },
     "752-dynamic-tags": {
-      "cases": null
+      "cases": "all"
     },
     "805-806-private-message": {
-      "cases": null
+      "cases": "all"
     },
     "867-add-comment-reward-object": {
-      "cases": "all",
+      "cases": null,
       "containerName": "mongodbDockerContainer-18-4"
     }
 

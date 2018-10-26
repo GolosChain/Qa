@@ -103,6 +103,9 @@ async function runTests(testsFolder, rootDir) {
                     containerName = config.defaultBuildName;
                 }
 
+                if (containerName.indexOf("mongo") > -1) {
+                    await docker_helper.restartMongoService();
+                }
                 await docker_helper.cleanWitnessNodeDataDir(containerName);
                 await docker_helper.setBlockLog(containerName);
                 containerHash = await docker_helper.runDockerContainer(containerName);
@@ -176,7 +179,7 @@ var walkSync = function(dir, filelist, result) {
             filelist = (walkSync(pwd, filelist,  result));
 
             if (/^\d+/.test(file)) {
-                result[file] = {"path" : pwd, "files" : filelist};                
+                result[file] = {"path" : pwd, "files" : filelist};
             }
         }
         else {
