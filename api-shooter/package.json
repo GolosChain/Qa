@@ -1,0 +1,20 @@
+{
+  "name": "api-shooter",
+  "version": "1.0.0",
+  "description": "API unit like tests for Golos node",
+  "main": "run_tests.sh",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./run_tests.sh"
+  },
+  "author": "AKorpusenko",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "chai-arrays": "^2.0.0",
+    "golos-js": "^0.7.5",
+    "module-alias": "^2.1.0"
+  }
+}
