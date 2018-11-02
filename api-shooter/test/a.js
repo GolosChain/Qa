@@ -387,6 +387,8 @@ describe("database_api::get_owner_history", async () => {
 
 describe("database_api::get_recovery_request", async () => {
   it("database_api::get_recovery_request", async () => {
+    let acc = await golos.api.getAccounts(['test']);
+    console.log(JSON.stringify(acc));
   });
 
 });

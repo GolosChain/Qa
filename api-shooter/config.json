@@ -3,7 +3,7 @@
     "cyberfounderKey": "5JVFFWRLwz6JoP9kguuRFfytToGU6cLgBVTL9t6NB3D3BQLbUBS",
     "websocket": "ws://0.0.0.0:8091",
     "address_prefix": "GLS",
-    "chain_id": ""
+    "chain_id": "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099de9deef6cdb679"
   },
 
   "defaultBuildName": "defaultDockerContainer-18-4",
@@ -14,7 +14,7 @@
     "configDir": "/home/anton/golos_tests/default/config/",
     "image": "goloschain/golos:v0.18.4preRC9-testnet",
 
-    "blocklogPath": "./share/default/golosd/blockchain/",
-    "defaultConfigPath": "./share/default/golosd/config/debug_config.ini"
+    "blocklogPath_": "./share/default/golosd/blockchain/",
+    "defaultConfigPath_notUsedNow": "./share/default/golosd/config/debug_config.ini"
   }
 }
