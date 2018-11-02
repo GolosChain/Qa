@@ -8,6 +8,7 @@ const path    = require('path');
 
 const rootDir = path.resolve(process.cwd() + "/../golos-tests/");
 const golos   = require('golos-js');
+const golos_helper   = require('../src/golos_helper');
 
 describe("witness_api::get_current_median_history_price", async () => {
   it("witness_api::get_current_median_history_price", async () => {
@@ -34,15 +35,15 @@ describe("witness_api::get_feed_history", async () => {
   });
 });
 
-describe("witness_api::get_miner_queue", async () => {
-  it("witness_api::get_miner_queue", async () => {
-    let res = await golos.api.getMinerQueueAsync();
-    res.should.be.an('array');
-    res.length.should.satisfy( (len) => {
-      return len > 0;
-    });
-  });
-});
+//describe("witness_api::get_miner_queue", async () => {
+//  it("witness_api::get_miner_queue", async () => {
+//    let res = await golos.api.getMinerQueueAsync();
+//    res.should.be.an('array');
+//    res.length.should.satisfy( (len) => {
+//      return len > 0;
+//    });
+//  });
+//});
 
 describe("witness_api::get_witness_schedule", async () => {
   it("witness_api::get_witness_schedule", async () => {
@@ -121,9 +122,10 @@ describe("witness_api::get_witness_by_account", async () => {
 
 describe("witness_api::get_witnesses_by_vote", async () => {
   it("witness_api::get_witnesses_by_vote", async () => {
-    let res = await golos.api.getWitnessesByVoteAsync('cyberfounder', 100);
-    console.log(res);
-    // TODO
+    let res = await golos.api.getWitnessesByVoteAsync('', 100);
+    checkArray(res, (val) => {
+      checkWitness(val);
+    });
   });
 });
 
@@ -173,31 +175,31 @@ describe("operation_history::get_ops_in_block", async () => {
   });
 });
 
-describe("operation_history::get_transaction", async () => {
-  it("operation_history::get_transaction", async () => {
-    let res = await golos.api.getTransaction('d233796e0c6512fbef1fd00b9d829f98746b28e5');
-console.log(res);
-    res.should.have.property('ref_block_num');
-    res.should.have.property('ref_block_prefix');
-    res.should.have.property('expiration');
-    res.should.have.property('operations');
-    res.should.have.property('extensions');
-    res.should.have.property('signatures');
-    res.should.have.property('transaction_id');
-    res.should.have.property('block_num');
-    res.should.have.property('transaction_num');
-
-    res.ref_block_num.should.be.a('number');
-    res.ref_block_prefix.should.be.a('number');
-    res.expiration.should.be.a('string');
-    res.operations.should.be.a('array');
-    res.extensions.should.be.a('array');
-    res.signatures.should.be.a('array');
-    res.transaction_id.should.be.a('string');
-    res.block_num.should.be.a('number');
-    res.transaction_num.should.be.a('number');
-  });
-});
+//describe("operation_history::get_transaction", async () => {
+//  it("operation_history::get_transaction", async () => {
+//    let res = await golos.api.getTransaction('d233796e0c6512fbef1fd00b9d829f98746b28e5');
+//console.log(res);
+//    res.should.have.property('ref_block_num');
+//    res.should.have.property('ref_block_prefix');
+//    res.should.have.property('expiration');
+//    res.should.have.property('operations');
+//    res.should.have.property('extensions');
+//    res.should.have.property('signatures');
+//    res.should.have.property('transaction_id');
+//    res.should.have.property('block_num');
+//    res.should.have.property('transaction_num');
+//
+//    res.ref_block_num.should.be.a('number');
+//    res.ref_block_prefix.should.be.a('number');
+//    res.expiration.should.be.a('string');
+//    res.operations.should.be.a('array');
+//    res.extensions.should.be.a('array');
+//    res.signatures.should.be.a('array');
+//    res.transaction_id.should.be.a('string');
+//    res.block_num.should.be.a('number');
+//    res.transaction_num.should.be.a('number');
+//  });
+//});
 
 describe("tags::get_trending_tags", async () => {
   it("tags::get_trending_tags", async () => {
@@ -381,34 +383,127 @@ describe("database_api::get_account_count", async () => {
 
 describe("database_api::get_owner_history", async () => {
   it("database_api::get_owner_history", async () => {
-  });
+    let res = await golos.api.getOwnerHistoryAsync('test');
+    checkArray(res, (val) => {
+      val.should.have.property('account');
+      val.account.should.be.a('string');
 
+      val.should.have.property('previous_owner_authority');
+      val.previous_owner_authority.should.be.an('object');
+      val.previous_owner_authority.should.have.property('weight_threshold');
+      val.previous_owner_authority.weight_threshold.should.be.a('number');
+      val.previous_owner_authority.should.have.property('account_auths');
+      val.previous_owner_authority.account_auths.should.be.an('array');
+      val.previous_owner_authority.should.have.property('key_auths');
+      val.previous_owner_authority.key_auths.should.be.an('array');
+
+      val.should.have.property('last_valid_time');
+      val.last_valid_time.should.be.a('string');
+    });
+  });
 });
 
 describe("database_api::get_recovery_request", async () => {
   it("database_api::get_recovery_request", async () => {
-    let acc = await golos.api.getAccounts(['test']);
-    console.log(JSON.stringify(acc));
-  });
+    let res = await golos.api.getRecoveryRequestAsync('test');
 
+    res.should.have.property('account_to_recover');
+    res.account_to_recover.should.be.a('string');
+
+    res.should.have.property('new_owner_authority');
+    res.new_owner_authority.should.be.an('object');
+    res.new_owner_authority.should.have.property('weight_threshold');
+    res.new_owner_authority.weight_threshold.should.be.a('number');
+    res.new_owner_authority.should.have.property('account_auths');
+    res.new_owner_authority.account_auths.should.be.an('array');
+    res.new_owner_authority.should.have.property('key_auths');
+    res.new_owner_authority.key_auths.should.be.an('array');
+
+    res.should.have.property('expires');
+    res.expires.should.be.a('string');
+  });
 });
 
 describe("database_api::get_escrow", async () => {
   it("database_api::get_escrow", async () => {
-  });
+    let res = await golos.api.getEscrow(100);
 
+    res.should.have.property('escrow_id');
+    res.escrow_id.should.be.a('number');
+
+    res.should.have.property('from');
+    res.from.should.be.a('string');
+
+    res.should.have.property('to');
+    res.to.should.be.a('string');
+
+    res.should.have.property('agent');
+    res.agent.should.be.a('string');
+
+    res.should.have.property('ratification_deadline');
+    res.ratification_deadline.should.be.a('string');
+
+    res.should.have.property('escrow_expiration');
+    res.escrow_expiration.should.be.a('string');
+
+    res.should.have.property('sbd_balance');
+    res.sbd_balance.should.be.a('string');
+
+    res.should.have.property('steem_balance');
+    res.steem_balance.should.be.a('string');
+
+    res.should.have.property('pending_fee');
+    res.pending_fee.should.be.a('string');
+
+    res.should.have.property('to_approved');
+    res.to_approved.should.be.a('boolean');
+
+    res.should.have.property('agent_approved');
+    res.agent_approved.should.be.a('boolean');
+
+    res.should.have.property('disputed');
+    res.disputed.should.be.a('boolean');
+  });
 });
 
 describe("database_api::get_withdraw_routes", async () => {
   it("database_api::get_withdraw_routes", async () => {
-  });
+    let res = await golos.api.getWithdrawRoutes('test', 'all');
+    checkArray(res, (val) => {
+      val.should.have.property('from_account');
+      val.from_account.should.be.a('string');
 
+      val.should.have.property('to_account');
+      val.to_account.should.be.a('string');
+
+      val.should.have.property('percent');
+      val.percent.should.be.a('number');
+
+      val.should.have.property('auto_vest');
+      val.auto_vest.should.be.a('boolean');
+    });
+  });
 });
 
 describe("database_api::get_account_bandwidth", async () => {
   it("database_api::get_account_bandwidth", async () => {
-  });
+    let res = await golos.api.getAccountBandwidthAsync('test', 'post');
 
+    res.should.have.property('account');
+    res.account.should.be.a('string');
+
+    res.should.have.property('type');
+    res.type.should.be.a('string');
+
+    res.should.have.property('average_bandwidth');
+    res.average_bandwidth.should.be.a('number');
+
+    res.should.have.property('lifetime_bandwidth');
+    res.lifetime_bandwidth.should.be.a('number');
+
+    res.should.have.property('last_bandwidth_update');
+    res.last_bandwidth_update.should.be.a('string');
+  });
 });
 
 describe("database_api::get_savings_withdraw_from", async () => {
