@@ -145,7 +145,6 @@ const cleanWitnessNodeDataDir = async (buildName = config.defaultBuildName) => {
 const setConfig = async (configData, buildName = config.defaultBuildName) => {
   try {
     logger.oklog("Changing config.ini file");
-
     let configPath = path.resolve(config[buildName].configDir, './config.ini');
     await fs.writeFileSync(configPath, configData);
 

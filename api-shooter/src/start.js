@@ -46,6 +46,9 @@ const run = async () => {
   try {
     await wrapper.cleanWitnessNodeDataDir(config.defaultBuildName);
     await wrapper.setBlockLog(config.defaultBuildName);
+    let configini = await fs.readFileSync(config[config.defaultBuildName].defaultConfigPath);
+    await wrapper.setConfig(configini.toString('utf8'));
+
     containerHash = await wrapper.runDockerContainer(config.defaultBuildName);
 
     let ready = false;
@@ -61,14 +64,15 @@ const run = async () => {
       return ready == true;
     });
 
-    await wrapper.delay(6000);
+    await wrapper.delay(6 * 1000);
 
     await wrapper.waitConditionChange(async ()=> {
       let hf = await golos.api.getHardforkVersionAsync();
       return parseInt(hf.split('.')[1]) == 19;
     });
 
-    await fill_825();
+    // await fill_825();
+    await wrapper.delay(200* 3 * 1000);
 
     process.exit();
   }
