@@ -15,37 +15,62 @@ const golos_helper   = require('../src/golos_helper');
 describe("924 Account Notes plugin", async () => {
     it("924 Account Notes plugin description", async () => { // TODO 
     });
-}
+});
 
 describe("324 Add option to choose curation reward percent", async () => {
     it("324 Add option to choose curation reward percent description", async () => { // TODO 
     });
-}
+});
 
 describe("898 Auciton window improvements", async () => {
     it("898 Auciton window improvements description", async () => { // TODO 
     });
-}
+});
 
 describe("533 Reduce time limits for posting and voting", async () => {
     it("533 Reduce time limits for posting and voting description", async () => { // TODO 
     });
-}
+});
 
 describe("295 Referal program", async () => {
     it("295 Referal program description", async () => { // TODO 
     });
-}
+});
 
 describe("825 post_count & comment_count Fix", async () => {
-    it("825 post_count & comment_count Fix description", async () => { // TODO 
-    });
-}
+  it("825 post_count & comment_count Fix description", async () => {
+        let hf = await golos.api.getHardforkVersionAsync();
+console.log(hf);
+    var accs = await golos.api.getAccounts(['test-825-1', 'test-825-2', 'test-825-3']);
+    console.log(JSON.stringify(accs));
+
+    accs[0].should.have.property('post_count');
+    accs[0].post_count.should.be.a('number');
+    accs[0].post_count.should.be.equal(1);
+    accs[0].should.have.property('comment_count');
+    accs[0].comment_count.should.be.a('number');
+    accs[0].comment_count.should.be.equal(0);
+
+    accs[1].should.have.property('post_count');
+    accs[1].post_count.should.be.a('number');
+    accs[1].post_count.should.be.equal(0);
+    accs[1].should.have.property('comment_count');
+    accs[1].comment_count.should.be.a('number');
+    accs[1].comment_count.should.be.equal(1);
+
+    accs[2].should.have.property('post_count');
+    accs[2].post_count.should.be.a('number');
+    accs[2].post_count.should.be.equal(0);
+    accs[2].should.have.property('comment_count');
+    accs[2].comment_count.should.be.a('number');
+    accs[2].comment_count.should.be.equal(0);
+  });
+});
 
 describe("756 Set percent for delegeted Golos Power", async () => {
     it("756 Set percent for delegeted Golos Power description", async () => { // TODO 
     });
-}
+});
 
 
 const checkPrice = (asset) => {
