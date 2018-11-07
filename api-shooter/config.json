@@ -6,13 +6,22 @@
     "chain_id": "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099de9deef6cdb679"
   },
 
-  "defaultBuildName": "defaultDockerContainer-18-4",
+  "defaultBuildName": "defaultDockerContainer-19-0",
 
   "defaultDockerContainer-18-4" : {
     "containerName": "golos-default-container",
     "volumeDataDir": "/home/anton/golos_tests/default/chain_data_01",
     "configDir": "/home/anton/golos_tests/default/config/",
     "image": "goloschain/golos:v0.18.4preRC9-testnet",
+
+    "blocklogPath_": "./share/default/golosd/blockchain/",
+    "defaultConfigPath_notUsedNow": "./share/default/golosd/config/debug_config.ini"
+  },
+  "defaultDockerContainer-19-0" : {
+    "containerName": "golos-default-container",
+    "volumeDataDir": "/home/anton/golos_tests/default/chain_data_01",
+    "configDir": "/home/anton/golos_tests/default/config/",
+    "image": "goloschain/golos:v0.19.0-testnet",
 
     "blocklogPath_": "./share/default/golosd/blockchain/",
     "defaultConfigPath_notUsedNow": "./share/default/golosd/config/debug_config.ini"

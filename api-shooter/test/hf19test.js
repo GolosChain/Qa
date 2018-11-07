@@ -39,10 +39,7 @@ describe("295 Referal program", async () => {
 
 describe("825 post_count & comment_count Fix", async () => {
   it("825 post_count & comment_count Fix description", async () => {
-        let hf = await golos.api.getHardforkVersionAsync();
-console.log(hf);
     var accs = await golos.api.getAccounts(['test-825-1', 'test-825-2', 'test-825-3']);
-    console.log(JSON.stringify(accs));
 
     accs[0].should.have.property('post_count');
     accs[0].post_count.should.be.a('number');
