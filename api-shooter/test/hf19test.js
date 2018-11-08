@@ -32,9 +32,40 @@ describe("533 Reduce time limits for posting and voting", async () => {
     });
 });
 
-describe("295 Referal program", async () => {
-    it("295 Referal program description", async () => { // TODO 
-    });
+describe("295 Referral program", async () => {
+  it("295 Referral program description", async () => {
+    var accs = await golos.api.getAccounts(['test-295-refl-1', 'test-295-refl-2', 'test-295-refl-3']);
+
+    accs[0].should.have.property('referrer_account');
+    accs[0].referrer_account.should.be.a('string');
+    accs[0].should.have.property('referrer_interest_rate');
+    accs[0].referrer_interest_rate.should.be.a('number');
+    accs[0].referrer_interest_rate.should.be.equal(0);
+    accs[0].should.have.property('referrer_end_date');
+    accs[0].referrer_end_date.should.be.a('string');
+    accs[0].should.have.property('referrer_break_fee');
+    accs[0].referrer_break_fee.should.be.a('string');
+
+    accs[1].should.have.property('referrer_account');
+    accs[1].referrer_account.should.be.a('string');
+    accs[1].should.have.property('referrer_interest_rate');
+    accs[1].referrer_interest_rate.should.be.a('number');
+    accs[1].referrer_interest_rate.should.be.not.equal(0);
+    accs[1].should.have.property('referrer_end_date');
+    accs[1].referrer_end_date.should.be.a('string');
+    accs[1].should.have.property('referrer_break_fee');
+    accs[1].referrer_break_fee.should.be.a('string');
+
+    accs[2].should.have.property('referrer_account');
+    accs[2].referrer_account.should.be.a('string');
+    accs[2].should.have.property('referrer_interest_rate');
+    accs[2].referrer_interest_rate.should.be.a('number');
+    accs[2].referrer_interest_rate.should.be.not.equal(0);
+    accs[2].should.have.property('referrer_end_date');
+    accs[2].referrer_end_date.should.be.a('string');
+    accs[2].should.have.property('referrer_break_fee');
+    accs[2].referrer_break_fee.should.be.a('string');
+  });
 });
 
 describe("825 post_count & comment_count Fix", async () => {
