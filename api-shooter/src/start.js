@@ -127,7 +127,7 @@ const run = async () => {
 
     // await fill_825();
     await fill_295();
-    await wrapper.delay(200* 3 * 1000);
+    // await wrapper.delay(200* 3 * 1000); // WTF?
 
     process.exit();
   }
