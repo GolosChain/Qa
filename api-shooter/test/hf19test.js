@@ -47,7 +47,7 @@ describe("898 Auction window improvements", async () => {
 describe("533 Reduce time limits for posting and voting", async function() {
   this.timeout(0);
   it("533 Reduce time limits for posting and voting description", async function() {
-    actors('test-533');
+    await actors('test-533');
 
     var cp = await golos.api.getChainProperties();
     cp.should.have.property('comments_window');
@@ -153,9 +153,31 @@ describe("825 post_count & comment_count Fix", async () => {
   });
 });
 
-describe("756 Set percent for delegeted Golos Power", async () => {
-    it("756 Set percent for delegeted Golos Power description", async () => { // TODO 
-    });
+describe("756 Set percent for delegated Golos Power", async function() {
+  this.timeout(0);
+  it("756 Set percent for delegated Golos Power description", async function () {
+    await actors('test-756-dr', 'test-756-de');
+
+    let OPERATIONS = [];
+
+    OPERATIONS.push(
+      ['delegate_vesting_shares_with_interest',
+        {
+          delegator: 'test-756-dr',
+          delegatee: 'test-756-de',
+          vesting_shares: '50000.000000 GESTS',
+          interest_rate: 25*100,
+          payout_strategy: 'to_delegated_vesting'
+        }
+      ]
+    );
+    await golos_helper.broadcastOperations(OPERATIONS);
+    await wrapper.delay(6*1000);
+
+    let res = await golos.api.sendAsync('database_api', {'method': 'get_vesting_delegations', 'params':['test-756-dr', 'test-756-de', 1]};
+    res.should.have.length.above(0);
+    res[0].interest_rate.should.be.equal(25*100);
+  });
 });
 
 
