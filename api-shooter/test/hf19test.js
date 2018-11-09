@@ -5,10 +5,13 @@ chai.use(assertArrays);
 const should  = chai.should();
 const expect  = chai.expect;
 const path    = require('path');
+const wrapper = require('../src/wrapper');
+const config  = require("../config.json");
 
 const rootDir = path.resolve(process.cwd() + "/../golos-tests/");
 const golos   = require('golos-js');
 const golos_helper   = require('../src/golos_helper');
+
 
 describe("924 Account Notes plugin", async () => {
   it("924 Account Notes plugin description", async () => {
@@ -58,14 +61,86 @@ describe("898 Auciton window improvements", async () => {
   });
 });
 
-describe("533 Reduce time limits for posting and voting", async () => {
-    it("533 Reduce time limits for posting and voting description", async () => { // TODO 
-    });
+describe("533 Reduce time limits for posting and voting", async function() {
+  this.timeout(0);
+  it("533 Reduce time limits for posting and voting description", async function() {
+    await actors('test-533');
+
+    var cp = await golos.api.getChainProperties();
+    cp.should.have.property('comments_window');
+    cp.should.have.property('comments_per_window');
+    cp.should.have.property('votes_window');
+    cp.should.have.property('votes_per_window');
+
+    console.log('-- Creating test-533-comment-0');
+    let wifTest = golos.auth.toWif('test-533', 'test-533', 'posting');
+    let permlink = 'test-533-comment-0';
+    let parentPermlink = 'ptest';
+    await golos_helper.createPost('test-533', wifTest, permlink, parentPermlink, 'test title', 'test body', '{}');
+    await wrapper.delay(6000);
+
+    for (let i = 1; i <= cp.comments_per_window - 1; ++i) { 
+      console.log('-- Creating test-533-comment-' + i);
+      permlink = 'test-533-comment-' + i;
+      await golos_helper.createComment('test-533', wifTest, permlink, 'test-533', 'test-533-comment-0', 'test title', 'test body', '{}');
+      await wrapper.delay(1000);
+    }
+
+    console.log('-- Trying to create last comment (should fail)');
+    permlink = 'test-533-comment-' + cp.comments_per_window;
+    try {
+      await golos_helper.createComment('test-533', wifTest, permlink, 'test-533', 'test-533-comment-0', 'test title', 'test body', '{}');
+      assert(false, 'Exception must throw because limit was exceed');
+    } catch (e) {
+    }
+
+    console.log('-- It fails. Waiting (skipping 1 window)');
+    await wrapper.delay(cp.comments_window*1000);
+
+    console.log('-- Trying again');
+    try {
+      await golos_helper.createComment('test-533', wifTest, permlink, 'test-533', 'test-533-comment-0', 'test title', 'test body', '{}');
+    } catch (e) {
+      assert(false, 'Exception must not throw because limit was renewed');
+    }
+    console.log('-- Success now');
+  });
 });
 
-describe("295 Referal program", async () => {
-    it("295 Referal program description", async () => { // TODO 
-    });
+describe("295 Referral program", async () => {
+  it("295 Referral program description", async () => {
+    var accs = await golos.api.getAccounts(['test-295-refl-1', 'test-295-refl-2', 'test-295-refl-3']);
+
+    accs[0].should.have.property('referrer_account');
+    accs[0].referrer_account.should.be.a('string');
+    accs[0].should.have.property('referrer_interest_rate');
+    accs[0].referrer_interest_rate.should.be.a('number');
+    accs[0].referrer_interest_rate.should.be.equal(0);
+    accs[0].should.have.property('referrer_end_date');
+    accs[0].referrer_end_date.should.be.a('string');
+    accs[0].should.have.property('referrer_break_fee');
+    accs[0].referrer_break_fee.should.be.a('string');
+
+    accs[1].should.have.property('referrer_account');
+    accs[1].referrer_account.should.be.a('string');
+    accs[1].should.have.property('referrer_interest_rate');
+    accs[1].referrer_interest_rate.should.be.a('number');
+    accs[1].referrer_interest_rate.should.be.not.equal(0);
+    accs[1].should.have.property('referrer_end_date');
+    accs[1].referrer_end_date.should.be.a('string');
+    accs[1].should.have.property('referrer_break_fee');
+    accs[1].referrer_break_fee.should.be.a('string');
+
+    accs[2].should.have.property('referrer_account');
+    accs[2].referrer_account.should.be.a('string');
+    accs[2].should.have.property('referrer_interest_rate');
+    accs[2].referrer_interest_rate.should.be.a('number');
+    accs[2].referrer_interest_rate.should.be.not.equal(0);
+    accs[2].should.have.property('referrer_end_date');
+    accs[2].referrer_end_date.should.be.a('string');
+    accs[2].should.have.property('referrer_break_fee');
+    accs[2].referrer_break_fee.should.be.a('string');
+  });
 });
 
 describe("825 post_count & comment_count Fix", async () => {
@@ -95,9 +170,31 @@ describe("825 post_count & comment_count Fix", async () => {
   });
 });
 
-describe("756 Set percent for delegeted Golos Power", async () => {
-    it("756 Set percent for delegeted Golos Power description", async () => { // TODO 
-    });
+describe("756 Set percent for delegated Golos Power", async function() {
+  this.timeout(0);
+  it("756 Set percent for delegated Golos Power description", async function () {
+    await actors('test-756-dr', 'test-756-de');
+
+    let OPERATIONS = [];
+
+    OPERATIONS.push(
+      ['delegate_vesting_shares_with_interest',
+        {
+          delegator: 'test-756-dr',
+          delegatee: 'test-756-de',
+          vesting_shares: '50000.000000 GESTS',
+          interest_rate: 25*100,
+          payout_strategy: 'to_delegated_vesting'
+        }
+      ]
+    );
+    await golos_helper.broadcastOperations(OPERATIONS);
+    await wrapper.delay(6*1000);
+
+    let res = await golos.api.sendAsync('database_api', {'method': 'get_vesting_delegations', 'params':['test-756-dr', 'test-756-de', 1]};
+    res.should.have.length.above(0);
+    res[0].interest_rate.should.be.equal(25*100);
+  });
 });
 
 

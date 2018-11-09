@@ -93,6 +93,36 @@ async function addCreateAccountOperation(OPERATIONS, userName, keys, creator, fe
     return OPERATIONS;   
 };
 
+async function createAccountDelegated(newAccountName, keys, creator, fee, delegation, extensions) {
+    let owner = {
+      weight_threshold: 1,
+      account_auths: [],
+      key_auths: [[keys.owner, 1]]
+    };
+    let active = {
+      weight_threshold: 1,
+      account_auths: [],
+      key_auths: [[keys.active, 1]]
+    };
+    let posting = {
+      weight_threshold: 1,
+      account_auths: [],
+      key_auths: [[keys.posting, 1]]
+    };
+    let memoKey = keys.memo;
+    let jsonMetadata = '{}';
+    let wif = cyberfounderKey;
+
+    golos.broadcast.accountCreateWithDelegation(wif, fee, delegation, creator, newAccountName, owner, active, posting, memoKey, jsonMetadata, extensions, function(err, result) {
+        if (!err) {
+            logger.log('accountCreateWithDelegation', result);
+        }
+        else {
+            logger.log(err);
+        }
+    });
+}
+
 async function createPost(author, wif, permlink, parentPermlink, title, body, jsonMetadata) {
     /**
      * comment() add a post
@@ -190,6 +220,7 @@ async function broadcastOperations(OPERATIONS) {
 
 module.exports.createAccount = createAccount;
 module.exports.addCreateAccountOperation = addCreateAccountOperation;
+module.exports.createAccountDelegated = createAccountDelegated;
 module.exports.createPost = createPost;
 module.exports.addCreatePost = addCreatePost;
 module.exports.createComment = createComment;

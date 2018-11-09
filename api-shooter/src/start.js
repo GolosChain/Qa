@@ -55,6 +55,60 @@ const fill_898 = async () => {
   await wrapper.delay(6000);
 };
 
+const fill_295 = async () => {
+  console.log('-- Fill for 295 issue');
+
+  await actors('test-295-0');
+
+  let cyberfounder = 'cyberfounder';
+  let cyberfounderKey = config.golosdProperties.cyberfounderKey;
+  let fee = '3.000 GOLOS';
+
+  console.log('---- Creating test-295-refl-1 account');
+  let acc_keys = await golos_helper.generateKeys('test-295-refl-1', 'test-295-refl-1');
+  let end_date = new Date();
+  end_date.setSeconds(end_date.getSeconds() + 10);
+  let aro = {};
+  aro.referrer = 'test-295-0';
+  aro.interest_rate = 9*100;
+  aro.end_date = end_date.toISOString().split(".")[0];
+  aro.break_fee = "0.000 GOLOS";
+  let extensions = [[0, aro]];
+  await golos_helper.createAccountDelegated('test-295-refl-1', acc_keys, cyberfounder, fee, '0.000001 GESTS', extensions);
+  await wrapper.delay(6000);
+
+  console.log('---- Creating test-295-1 post');
+  let wifTest = golos.auth.toWif('test-295-refl-1', 'test-295-refl-1', 'posting');
+  let permlink = 'test-295-1';
+  let parentPermlink = 'ptest';
+  await golos_helper.createPost('test-295-refl-1', wifTest, permlink, parentPermlink, 'test title', 'test body', '{}');
+  await wrapper.delay(6000);
+
+  console.log('---- Creating test-295-2 post');
+  wifTest = golos.auth.toWif('test-295-refl-1', 'test-295-refl-1', 'posting');
+  permlink = 'test-295-2';
+  parentPermlink = 'ptest';
+  await golos_helper.createPost('test-295-refl-1', wifTest, permlink, parentPermlink, 'test title', 'test body', '{}');
+  await wrapper.delay(6000);
+
+  console.log('---- Creating test-295-refl-2 account');
+  acc_keys = await golos_helper.generateKeys('test-295-refl-2', 'test-295-refl-2');
+  end_date = new Date();
+  end_date.setSeconds(end_date.getSeconds() + 1000000);
+  aro.end_date = end_date.toISOString().split(".")[0];
+  aro.break_fee = "0.001 GOLOS";
+  extensions = [[0, aro]];
+  await golos_helper.createAccountDelegated('test-295-refl-2', acc_keys, cyberfounder, fee, '0.000001 GESTS', extensions);
+  await wrapper.delay(6000);
+
+  console.log('---- Creating test-295-refl-3 account');
+  acc_keys = await golos_helper.generateKeys('test-295-refl-3', 'test-295-refl-3');
+  aro.break_fee = "0.000 GOLOS";
+  extensions = [[0, aro]];
+  await golos_helper.createAccountDelegated('test-295-refl-3', acc_keys, cyberfounder, fee, '0.000001 GESTS', extensions);
+  await wrapper.delay(6000);
+};
+
 const run = async () => {
   try {
     await wrapper.cleanWitnessNodeDataDir(config.defaultBuildName);
@@ -84,7 +138,7 @@ const run = async () => {
       return parseInt(hf.split('.')[1]) == 19;
     });
 
-    // await fill_825();
+    await fill_825();
     await fill_898();
 
     process.exit();
