@@ -10,11 +10,28 @@ const rootDir = path.resolve(process.cwd() + "/../golos-tests/");
 const golos   = require('golos-js');
 const golos_helper   = require('../src/golos_helper');
 
-
-
 describe("924 Account Notes plugin", async () => {
-    it("924 Account Notes plugin description", async () => { // TODO 
-    });
+  it("924 Account Notes plugin description", async () => {
+      let res = await golos.api.sendAsync("account_notes", {"method": "get_value", "params":["test-898-author","test-898"]});
+      res.should.eql('');
+      // console.log(JSON.stringify(res, null, 2));
+      let settings = await golos.api.sendAsync("account_notes", {"method": "get_settings", "params":[]});
+    
+      settings.should.have.property('max_key_length');
+      settings.max_key_length.should.be.a('number');
+
+      settings.should.have.property('max_value_length');
+      settings.max_value_length.should.be.a('number');
+
+      settings.should.have.property('max_note_count');
+      settings.max_note_count.should.be.a('number');
+
+      settings.should.have.property('tracked_accounts');
+      settings.tracked_accounts.should.be.a('array');
+
+      settings.should.have.property('untracked_accounts');
+      settings.untracked_accounts.should.be.a('array');
+  });
 });
 
 describe("324 Add option to choose curation reward percent", async () => {
@@ -23,8 +40,22 @@ describe("324 Add option to choose curation reward percent", async () => {
 });
 
 describe("898 Auciton window improvements", async () => {
-    it("898 Auciton window improvements description", async () => { // TODO 
-    });
+  it("898 Auciton window improvements description", async () => {
+    let content = await golos.api.getContent('test-898-author', 'test-898', -1);
+    // console.log(content);
+
+    content.should.have.property('auction_window_reward_destination');
+    content.should.have.property('auction_window_size');
+    content.should.have.property('auction_window_weight');
+    content.should.have.property('votes_in_auction_window_weight');
+
+    content.auction_window_reward_destination.should.be.a('string');
+    content.auction_window_size.should.be.a('number');
+    content.auction_window_weight.should.be.a('number');
+    content.votes_in_auction_window_weight.should.be.a('number');
+
+    content.auction_window_reward_destination.should.eql('to_reward_fund');
+  });
 });
 
 describe("533 Reduce time limits for posting and voting", async () => {

@@ -42,6 +42,19 @@ const fill_825 = async () => {
   await wrapper.delay(6000);
 };
 
+const fill_898 = async () => {
+  console.log('-- Fill for 898 issue');
+
+  await actors('test-898');
+
+  console.log('---- Creating test-898-author');
+  let wifTest = golos.auth.toWif('test-898', 'test-898', 'posting');
+  let permlink = 'test-898';
+  let parentPermlink = 'ptest';
+  await golos_helper.createPost('test-898', wifTest, permlink, parentPermlink, 'Test title', 'Test body', '{}');
+  await wrapper.delay(6000);
+};
+
 const run = async () => {
   try {
     await wrapper.cleanWitnessNodeDataDir(config.defaultBuildName);
@@ -72,7 +85,7 @@ const run = async () => {
     });
 
     // await fill_825();
-    await wrapper.delay(200* 3 * 1000);
+    await fill_898();
 
     process.exit();
   }
