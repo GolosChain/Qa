@@ -37,13 +37,20 @@ describe("924 Account Notes plugin", async () => {
   });
 });
 
-describe("324 Add option to choose curation reward percent", async () => {
-    it("324 Add option to choose curation reward percent description", async () => { // TODO 
-    });
+describe("324 Add option to choose curation reward percent", async function() {
+  it("324 Add option to choose curation reward percent description", async function() {
+    var cp = await golos.api.getChainProperties();
+    cp.should.have.property('min_curation_percent');
+    cp.should.have.property('max_curation_percent');
+
+    console.log('-- Checking t324-default post');
+    let c = await golos.api.getContentAsync('t324-1', 't324-default', 0);
+    c.curation_rewards_percent.should.be.equal(cp.min_curation_percent);
+  });
 });
 
-describe("898 Auciton window improvements", async () => {
-  it("898 Auciton window improvements description", async () => {
+describe("898 Auction window improvements", async () => {
+  it("898 Auction window improvements description", async () => {
     let content = await golos.api.getContent('test-898-author', 'test-898', -1);
     // console.log(content);
 
@@ -191,7 +198,7 @@ describe("756 Set percent for delegated Golos Power", async function() {
     await golos_helper.broadcastOperations(OPERATIONS);
     await wrapper.delay(6*1000);
 
-    let res = await golos.api.sendAsync('database_api', {'method': 'get_vesting_delegations', 'params':['test-756-dr', 'test-756-de', 1]};
+    let res = await golos.api.sendAsync('database_api', {'method': 'get_vesting_delegations', 'params':['test-756-dr', 'test-756-de', 1]});
     res.should.have.length.above(0);
     res[0].interest_rate.should.be.equal(25*100);
   });

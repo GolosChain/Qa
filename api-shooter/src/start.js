@@ -109,6 +109,23 @@ const fill_295 = async () => {
   await wrapper.delay(6000);
 };
 
+const fill_324 = async () => {
+  console.log('-- Fill for 324 issue');
+
+  await actors('t324-1');
+
+  let cyberfounder = 'cyberfounder';
+  let cyberfounderKey = config.golosdProperties.cyberfounderKey;
+  let fee = '3.000 GOLOS';
+
+  console.log('---- Creating t324-default post');
+  let wifTest = golos.auth.toWif('t324-1', 't324-1', 'posting');
+  let permlink = 't324-default';
+  let parentPermlink = 'ptest';
+  await golos_helper.createPost('t324-1', wifTest, permlink, parentPermlink, 'test title', 'test body', '{}');
+  await wrapper.delay(6000);
+};
+
 const run = async () => {
   try {
     await wrapper.cleanWitnessNodeDataDir(config.defaultBuildName);
@@ -138,8 +155,10 @@ const run = async () => {
       return parseInt(hf.split('.')[1]) == 19;
     });
 
-    await fill_825();
-    await fill_898();
+    //await fill_825();
+    //await fill_898();
+    //await fill_295();
+    await fill_324();
 
     process.exit();
   }
