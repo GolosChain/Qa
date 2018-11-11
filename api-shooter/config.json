@@ -22,7 +22,7 @@
     "containerName": "golos19hf ",
     "volumeDataDir": "/home/anton/golos_tests/0.19.0/chain_data_01",
     "configDir": "/home/anton/golos_tests/0.19.0/config/",
-    "image": "goloschain/golos:v0.19.0-testnet",
+    "image": "goloschain/golos:v0.19.0-testnet-qa",
 
     "blocklogPath": "./share/0.19.0/golosd/blockchain/",
     "defaultConfigPath": "./share/0.19.0/golosd/config/debug_config.ini"
