@@ -47,7 +47,7 @@ const fill_898 = async () => {
 
   await actors('test-898');
 
-  console.log('---- Creating test-898-author');
+  console.log('---- Creating test-898');
   let wifTest = golos.auth.toWif('test-898', 'test-898', 'posting');
   let permlink = 'test-898';
   let parentPermlink = 'ptest';
@@ -156,9 +156,9 @@ const run = async () => {
     });
 
     //await fill_825();
-    //await fill_898();
+    await fill_898();
     //await fill_295();
-    await fill_324();
+    //await fill_324();
 
     process.exit();
   }

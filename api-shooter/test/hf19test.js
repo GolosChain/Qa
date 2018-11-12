@@ -13,27 +13,42 @@ const golos   = require('golos-js');
 const golos_helper   = require('../src/golos_helper');
 
 
-describe("924 Account Notes plugin", async () => {
-  it("924 Account Notes plugin description", async () => {
-      let res = await golos.api.sendAsync("account_notes", {"method": "get_value", "params":["test-898-author","test-898"]});
-      res.should.eql('');
-      // console.log(JSON.stringify(res, null, 2));
-      let settings = await golos.api.sendAsync("account_notes", {"method": "get_settings", "params":[]});
-    
-      settings.should.have.property('max_key_length');
-      settings.max_key_length.should.be.a('number');
+describe("924 Account Notes plugin", async function() {
+  it("924 Account Notes plugin description", async function() {
+    let settings = await golos.api.sendAsync("account_notes", {"method": "get_settings", "params":[]});
 
-      settings.should.have.property('max_value_length');
-      settings.max_value_length.should.be.a('number');
+    settings.should.have.property('max_key_length');
+    settings.max_key_length.should.be.a('number');
 
-      settings.should.have.property('max_note_count');
-      settings.max_note_count.should.be.a('number');
+    settings.should.have.property('max_value_length');
+    settings.max_value_length.should.be.a('number');
 
-      settings.should.have.property('tracked_accounts');
-      settings.tracked_accounts.should.be.a('array');
+    settings.should.have.property('max_note_count');
+    settings.max_note_count.should.be.a('number');
 
-      settings.should.have.property('untracked_accounts');
-      settings.untracked_accounts.should.be.a('array');
+    settings.should.have.property('tracked_accounts');
+    settings.tracked_accounts.should.be.a('array');
+
+    settings.should.have.property('untracked_accounts');
+    settings.untracked_accounts.should.be.a('array');
+
+    let res = await golos.api.sendAsync("account_notes", {"method": "get_value", "params":["test-898","lorem"]});
+    res.should.be.a('string');
+    res.should.be.equal('');
+
+    let wifTest = golos.auth.toWif('test-898', 'test-898', 'active');
+    var json = JSON.stringify(['set_value', {
+      account: 'test-898',
+      key: 'lorem',
+      value: 'ipsum'
+    }]);
+    res = await golos.broadcast.customJsonAsync(wifTest, ['test-898'], [], 'account_notes', json);
+    console.log('set_value result is', res);
+
+    res = await golos.api.sendAsync("account_notes", {"method": "get_value", "params":["test-898","lorem"]});
+    console.log(JSON.stringify(res, null, 2));
+    res.should.be.a('string');
+    res.should.be.equal('ipsum');
   });
 });
 
