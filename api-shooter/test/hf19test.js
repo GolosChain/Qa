@@ -8,10 +8,9 @@ const path    = require('path');
 const wrapper = require('../src/wrapper');
 const config  = require("../config.json");
 
-const rootDir = path.resolve(process.cwd() + "/../golos-tests/");
-const golos   = require('golos-js');
-const golos_helper   = require('../src/golos_helper');
-
+const rootDir        =    path.resolve(process.cwd() + "/../golos-tests/");
+const golos          =    require('golos-js');
+const golos_helper   =    require('../src/golos_helper');
 
 describe("924 Account Notes plugin", async function() {
   it("924 Account Notes plugin description", async function() {
@@ -66,8 +65,8 @@ describe("324 Add option to choose curation reward percent", async function() {
 
 describe("898 Auction window improvements", async () => {
   it("898 Auction window improvements description", async () => {
-    let content = await golos.api.getContent('test-898-author', 'test-898', -1);
-    // console.log(content);
+    let content = await golos.api.getContent('test-898', 'test-898', -1);
+    console.log(content);
 
     content.should.have.property('auction_window_reward_destination');
     content.should.have.property('auction_window_size');
@@ -80,7 +79,51 @@ describe("898 Auction window improvements", async () => {
     content.votes_in_auction_window_weight.should.be.a('number');
 
     content.auction_window_reward_destination.should.eql('to_reward_fund');
-  });
+
+  // Preparing operation to change the AUW reward destination
+    let author = 'test-898';
+    let permlink = 'test-898';
+
+    let operations = [];
+
+    let max_accepted_payout = ["1000000.000", 'GBG'].join(" ");
+    let percent_steem_dollars = 10000; // 10000 === 100%
+    let allow_votes = true;
+    let allow_curation_rewards = true;
+
+    operations.push(
+      ['comment_options', {
+        author,
+        permlink,
+        max_accepted_payout,
+        percent_steem_dollars,
+        allow_votes,
+        allow_curation_rewards,
+        // extensions: [ [ 1, {destination: "to_curators"}] ] // ← Doesn't work in Golos node! Fix serializing error, api is ok.
+        extensions: [ [ 0, { beneficiaries: [{ account: 'golosio', weight: 1000 }] } ] ] // Delete after fix ↑↑
+      }]
+    )
+
+    let author_key = await golos.auth.toWif('test-898', 'test-898', 'posting');
+
+    await golos.broadcast.send(
+      {
+        extensions: [],
+        operations
+      }, [author_key], function(err, res) {
+        if(err) {
+          console.log(err)
+        }
+        else {
+          console.log(res)
+        }
+    });
+    await wrapper.delay(6000);
+  // getting updated comment info
+    content = await golos.api.getContent('test-898', 'test-898', -1);
+    console.log(content);
+    content.auction_window_reward_destination.should.eql('to_curators');
+  }).timeout(10000);
 });
 
 describe("533 Reduce time limits for posting and voting", async function() {
@@ -335,3 +378,19 @@ const checkOperation = (o) => {
   o.timestamp.should.be.a('string');
   o.op.should.be.a('array');
 };
+
+
+const actors = async (...acc_names) => {
+  for (let acc_name of acc_names) {
+    let cyberfounder = 'cyberfounder';
+    let cyberfounderKey = config.golosdProperties.cyberfounderKey;
+    let fee = '3.000 GOLOS';
+
+    console.log('---- Creating ' + acc_name + ' account');
+    let acc_keys = await golos_helper.generateKeys(acc_name, acc_name);
+    await golos_helper.createAccount(acc_name, acc_keys, cyberfounder, fee);
+    await wrapper.delay(6000);
+  }
+};
+
+const actor = async (...acc_name) => actors(acc_name);

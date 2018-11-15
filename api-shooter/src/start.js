@@ -45,7 +45,7 @@ const fill_825 = async () => {
 const fill_898 = async () => {
   console.log('-- Fill for 898 issue');
 
-  await actors('test-898');
+  await actors('test-898', 'golosio');
 
   console.log('---- Creating test-898');
   let wifTest = golos.auth.toWif('test-898', 'test-898', 'posting');
