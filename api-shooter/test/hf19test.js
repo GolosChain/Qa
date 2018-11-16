@@ -63,8 +63,9 @@ describe("324 Add option to choose curation reward percent", async function() {
   });
 });
 
-describe("898 Auction window improvements", async () => {
-  it("898 Auction window improvements description", async () => {
+describe("898 Auction window improvements", async function() {
+  this.timeout(10000);
+  it("898 Auction window improvements description", async function() {
     let content = await golos.api.getContent('test-898', 'test-898', -1);
     console.log(content);
 
@@ -123,7 +124,7 @@ describe("898 Auction window improvements", async () => {
     content = await golos.api.getContent('test-898', 'test-898', -1);
     console.log(content);
     content.auction_window_reward_destination.should.eql('to_curators');
-  }).timeout(10000);
+  });
 });
 
 describe("533 Reduce time limits for posting and voting", async function() {
