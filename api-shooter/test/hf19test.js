@@ -177,35 +177,48 @@ describe("295 Referral program", async () => {
   it("295 Referral program description", async () => {
     var accs = await golos.api.getAccounts(['test-295-refl-1', 'test-295-refl-2', 'test-295-refl-3']);
 
+    console.log('-- Checking test-295-refl-1 account (breaked via referral end)');
     accs[0].should.have.property('referrer_account');
     accs[0].referrer_account.should.be.a('string');
     accs[0].should.have.property('referrer_interest_rate');
     accs[0].referrer_interest_rate.should.be.a('number');
     accs[0].referrer_interest_rate.should.be.equal(0);
-    accs[0].should.have.property('referrer_end_date');
-    accs[0].referrer_end_date.should.be.a('string');
-    accs[0].should.have.property('referrer_break_fee');
-    accs[0].referrer_break_fee.should.be.a('string');
+    accs[0].should.have.property('referral_end_date');
+    accs[0].referral_end_date.should.be.a('string');
+    accs[0].should.have.property('referral_break_fee');
+    accs[0].referral_break_fee.should.be.a('string');
 
+    console.log('-- Checking test-295-refl-2 account (breaked via referral break free)');
     accs[1].should.have.property('referrer_account');
     accs[1].referrer_account.should.be.a('string');
     accs[1].should.have.property('referrer_interest_rate');
     accs[1].referrer_interest_rate.should.be.a('number');
-    accs[1].referrer_interest_rate.should.be.not.equal(0);
-    accs[1].should.have.property('referrer_end_date');
-    accs[1].referrer_end_date.should.be.a('string');
-    accs[1].should.have.property('referrer_break_fee');
-    accs[1].referrer_break_fee.should.be.a('string');
+    accs[1].referrer_interest_rate.should.be.equal(0);
+    accs[1].should.have.property('referral_end_date');
+    accs[1].referral_end_date.should.be.a('string');
+    accs[1].should.have.property('referral_break_fee');
+    accs[1].referral_break_fee.should.be.a('string');
 
+    console.log('-- Checking test-295-refl-1 account (not breaked)');
     accs[2].should.have.property('referrer_account');
     accs[2].referrer_account.should.be.a('string');
     accs[2].should.have.property('referrer_interest_rate');
     accs[2].referrer_interest_rate.should.be.a('number');
     accs[2].referrer_interest_rate.should.be.not.equal(0);
-    accs[2].should.have.property('referrer_end_date');
-    accs[2].referrer_end_date.should.be.a('string');
-    accs[2].should.have.property('referrer_break_fee');
-    accs[2].referrer_break_fee.should.be.a('string');
+    accs[2].should.have.property('referral_end_date');
+    accs[2].referral_end_date.should.be.a('string');
+    accs[2].should.have.property('referral_break_fee');
+    accs[2].referral_break_fee.should.be.a('string');
+
+    console.log('-- Checking test-295-1 comment (when referral not yet ended)');
+    let content = await golos.api.getContent('test-295-refl-1', 'test-295-1', 0);
+    content.beneficiaries.should.have.length(1);
+    content.beneficiaries[0].account.should.be.equal('test-295-0');
+    content.beneficiaries[0].weight.should.be.equal(900);
+
+    console.log('-- Checking test-295-2 comment (when referral not yet ended)');
+    content = await golos.api.getContent('test-295-refl-1', 'test-295-2', 0);
+    content.beneficiaries.should.have.length(0);
   });
 });
 

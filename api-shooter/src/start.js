@@ -21,6 +21,24 @@ const actors = async (...acc_names) => {
 
 const actor = async (...acc_name) => actors(acc_name);
 
+const fund = async (acc_name, fund_in_golos) => {
+  let cyberfounderKey = config.golosdProperties.cyberfounderKey;
+  await golos.broadcast.transferAsync(cyberfounderKey, 'cyberfounder', acc_name, '0.200 GOLOS', '');
+  await wrapper.delay(6000);
+  console.log('---- Fund ' + acc_name + ' account');
+};
+
+const create_root_post_to_test_comments = async() => {
+  await actors('test-root-acc');
+
+  console.log('---- Creating test-root-perm post');
+  let wifTest = golos.auth.toWif('test-root-acc', 'test-root-acc', 'posting');
+  let permlink = 'test-root-perm';
+  let parentPermlink = 'ptest';
+  await golos_helper.createPost('test-root-acc', wifTest, permlink, parentPermlink, 'test title', 'test body', '{}');
+  await wrapper.delay(6000);
+};
+
 const fill_825 = async () => {
   console.log('-- Fill for 825 issue');
 
@@ -77,18 +95,18 @@ const fill_295 = async () => {
   await golos_helper.createAccountDelegated('test-295-refl-1', acc_keys, cyberfounder, fee, '0.000001 GESTS', extensions);
   await wrapper.delay(6000);
 
-  console.log('---- Creating test-295-1 post');
+  console.log('---- Creating test-295-1 comment (when referral not yet ended)');
   let wifTest = golos.auth.toWif('test-295-refl-1', 'test-295-refl-1', 'posting');
   let permlink = 'test-295-1';
-  let parentPermlink = 'ptest';
-  await golos_helper.createPost('test-295-refl-1', wifTest, permlink, parentPermlink, 'test title', 'test body', '{}');
+  let parentPermlink = 'test-root-perm';
+  await golos_helper.createComment('test-295-refl-1', wifTest, permlink, 'test-root-acc', parentPermlink, 'test title', 'test body', '{}');
   await wrapper.delay(6000);
 
-  console.log('---- Creating test-295-2 post');
+  console.log('---- Creating test-295-2 comment (when referral ended)');
   wifTest = golos.auth.toWif('test-295-refl-1', 'test-295-refl-1', 'posting');
   permlink = 'test-295-2';
-  parentPermlink = 'ptest';
-  await golos_helper.createPost('test-295-refl-1', wifTest, permlink, parentPermlink, 'test title', 'test body', '{}');
+  parentPermlink = 'test-root-perm';
+  await golos_helper.createComment('test-295-refl-1', wifTest, permlink, 'test-root-acc', parentPermlink, 'test title', 'test body', '{}');
   await wrapper.delay(6000);
 
   console.log('---- Creating test-295-refl-2 account');
@@ -99,6 +117,14 @@ const fill_295 = async () => {
   aro.break_fee = "0.001 GOLOS";
   extensions = [[0, aro]];
   await golos_helper.createAccountDelegated('test-295-refl-2', acc_keys, cyberfounder, fee, '0.000001 GESTS', extensions);
+  await wrapper.delay(6000);
+
+  console.log('---- Breaking referral for test-295-refl-2 account');
+  await fund('test-295-refl-2', 0.200);
+  golos.broadcast.breakFreeReferral('test-295-refl-2', [], function(err,res) { // TODO Not works!
+    console.log(err);
+    console.log(res);
+  });
   await wrapper.delay(6000);
 
   console.log('---- Creating test-295-refl-3 account');
@@ -154,6 +180,8 @@ const run = async () => {
       let hf = await golos.api.getHardforkVersionAsync();
       return parseInt(hf.split('.')[1]) == 19;
     });
+
+    create_root_post_to_test_comments();
 
     //await fill_825();
     await fill_898();
