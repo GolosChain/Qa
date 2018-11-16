@@ -20,7 +20,7 @@ const Cases = {
             await logger.oklog('case1: Starting testcase for private messages');
             
             await fs_helper.delay(6000); // Wait for API available
-            
+
             await fs_helper.waitConditionChange( async ()=> {
                 let hf = await golos.api.getHardforkVersionAsync();
                 return parseInt(hf.split('.')[1]) == config.last_hardfork;
