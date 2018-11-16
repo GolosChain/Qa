@@ -121,7 +121,8 @@ const fill_295 = async () => {
 
   console.log('---- Breaking referral for test-295-refl-2 account');
   await fund('test-295-refl-2', 0.200);
-  golos.broadcast.breakFreeReferral('test-295-refl-2', [], function(err,res) { // TODO Not works!
+  let wifTestActive = golos.auth.toWif('test-295-refl-2', 'test-295-refl-2', 'active');
+  golos.broadcast.breakFreeReferral(wifTestActive, 'test-295-refl-2', [], function(err,res) {
     console.log(err);
     console.log(res);
   });
@@ -185,7 +186,7 @@ const run = async () => {
 
     //await fill_825();
     await fill_898();
-    //await fill_295();
+    await fill_295();
     //await fill_324();
 
     process.exit();
