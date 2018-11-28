@@ -180,6 +180,39 @@ const setBlockLog = async (buildName = config.defaultBuildName) => {
   }
 };
 
+// Executes cli_wallet commands sequently one by one
+const runCliWalletScript = async (commands, buildName = config.defaultBuildName) => {
+  try {
+    console.log('BEGIN')
+      let command = "sudo docker exec -i " + config[buildName].containerName + "\
+        /usr/local/bin/cli_wallet --server-rpc-endpoint=\"ws://127.0.0.1:8091\" \
+        --commands=\"" + commands + "\""
+
+    let done = false;
+    let cmd = cp.exec(command, {detached: false});
+
+    cmd.stdout.on('data', function (data) {
+      console.log(data.toString('utf8'));
+    });
+
+    cmd.stderr.on('data', function (data) {
+      console.log(data.toString('utf8'));
+    });
+
+    cmd.on('close', () => {
+      done = true;
+    });
+
+    await waitConditionChange( async ()=> {
+        return done;
+    }, 100);
+    console.log('SUCCESS')
+  }
+  catch(err) {
+    logger.elog("Executing cli_wallet script failed with error", err.message);
+  }
+};
+
 
 module.exports.runDockerContainer         =       runDockerContainer;
 module.exports.stopDockerContainer        =       stopDockerContainer;
@@ -189,3 +222,4 @@ module.exports.setConfig                  =       setConfig;
 module.exports.setBlockLog                =       setBlockLog;
 module.exports.waitConditionChange        =       waitConditionChange;
 module.exports.delay                      =       delay;
+module.exports.runCliWalletScript         =       runCliWalletScript;
