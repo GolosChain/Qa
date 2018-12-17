@@ -1,6 +1,39 @@
 # About API-shooter #
 
-This is a Node js script which tests golos node API-methods using npms Mocha and Chai.
+This is the NodeJS script which tests golos node API-methods using npm packages Mocha and Chai.
+
+# How does it work #
+
+## Prefiller ##
+
+To test Golos API methods you need to have some data in the blockchain. So we need to fill it with all avaliable data variants, like posts, comments, votes, price_feeds, market trades and etc. So this prefiller has two parts: 
+- After cashout  
+    Doing some operations and then waiting for cashout. That would give us opportunity to test the whole life cycle of the blockchain.
+- Others
+    These ones do not need to wait for cashout, for instance in cases when you need some fresh comment
+
+### Executing order ###
+
+- First of all you need to fill testnet with `prefiller.js`. 
+- After it would be ready you should copy the blockchain state and save it to `share` folder to use the prefilled data in mocha tests cases. 
+- `./run_tests`
+
+### What time does it take to fill testnet and wait cashout? ###
+
+Basicly it's 60 minutes, but you can change it. 
+In [**GolosChain/golos**](https://github.com/GolosChain/golos) there is a [**config file**](https://github.com/GolosChain/golos/blob/master/libraries/protocol/include/golos/protocol/config.hpp) which contains the line: 
+`#define STEEMIT_CASHOUT_WINDOW_SECONDS          (60*60) /// 1 hour`
+Which can be replaced by any value you want. So you build docker image with changed value of `STEEMIT_CASHOUT_WINDOW_SECONDS` if you need to get golos node with fast cashout. It may be usefull for tests.
+```
+cd golos/
+sudo docker build -t goloschain/golos_19hf_fastcashout -f share/golosd/docker/Dockerfile-testnet .
+```
+
+After that make needed changes in `config.json`. Look at section "How to configure"
+
+### Tests themselves ###
+
+All test are written using Mocha and Chain and placed in `tests` folder. By the way Mocha test cases are asynchronous funcitons, each of them call certain API mathod one or more times. Of course all parameters are written according to prefilled values. 
 
 # How to use #
 
@@ -30,3 +63,9 @@ Currently there is only option to test docker container. BTW the first todo is t
 
 ## How to run ##
 Just run bash script `run_tests.sh`
+
+
+# TODO #
+- Add config for prefiller. 
+    It would be cool if api-shooter could be used to test any golos node. As prefiller and tests are separated it is possible to use mocha tests for api testing without filling the blockchain by yourself. It can be already filled, and be a remote node. All you need is just a websocket address. There is no matter for tests what golos node answers the API calls, so with few modifications this tool can be used to test production node too. What is greate coz it allows to test the production code version and be sured that all API methods do work correctly.
+- Add wrap 

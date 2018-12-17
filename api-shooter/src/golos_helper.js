@@ -41,7 +41,6 @@ async function createAccount(newAccountName, keys, creator, fee) {
     let memoKey = keys.memo;
     let jsonMetadata = '{}';
     let wif = cyberfounderKey;
-logger.oklog(wif);
 
     golos.broadcast.accountCreate(wif, fee, creator, newAccountName, owner, active, posting, memoKey, jsonMetadata, function(err, result) {
         if (!err) {
@@ -136,7 +135,7 @@ function addCreatePost(OPERATIONS, author, permlink, parent_permlink, title, bod
     return OPERATIONS;
 }
 
-async function createComment(author, keys, permlink, parentAuthor, parentPermlink, body, title, jsonMetadata) {
+async function createComment(author, wif, permlink, parentAuthor, parentPermlink, body, title, jsonMetadata) {
     /**
      * comment() add a comment
      * @param {Base58} wif - private posting key
@@ -148,14 +147,8 @@ async function createComment(author, keys, permlink, parentAuthor, parentPermlin
      * @param {String} body - text of the comment
      * @param {String} jsonMetadata - meta-data of the post (images etc.)
     */
-    var wif = keys.posting;
-    golos.broadcast.comment(wif, parentAuthor, parentPermlink, author, permlink, title, body, jsonMetadata, function(err, result) {
-      //logger.log(err, result);
-      if (!err) {
-        logger.log('comment', result);
-      }
-      else logger.log(err);
-    });
+
+    golos.broadcast.commentAsync(wif, parentAuthor, parentPermlink, author, permlink, title, body, jsonMetadata);
 }
 
 function addCreateComment(OPERATIONS, author, permlink, parentAuthor, parentPermlink, body, title, jsonMetadata) {
@@ -174,6 +167,13 @@ function addCreateComment(OPERATIONS, author, permlink, parentAuthor, parentPerm
     );
     return OPERATIONS;
 }
+
+const addOperation = async(OPERATIONS, operationName, object) => {
+  OPERATIONS.push(
+    [ operationName, object ]
+  );
+  return OPERATIONS;
+};
 
 async function broadcastOperations(OPERATIONS) {
     golos.broadcast.send(
@@ -198,3 +198,4 @@ module.exports.createComment = createComment;
 module.exports.addCreateComment = addCreatePost;
 module.exports.broadcastOperations = broadcastOperations;
 module.exports.generateKeys = generateKeys;
+module.exports.addOperation = addOperation;

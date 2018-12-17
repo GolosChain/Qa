@@ -27,7 +27,7 @@ const waitConditionChange = async(cond, ts = 1000 * 3) => {
 
 const runDockerContainer = async (buildName = config.defaultBuildName) => {
   try {
-    logger.oklog("Running docker container " + buildName);
+    logger.log("Running docker container " + buildName);
 
     let dockerCommand = "sudo docker run -d --name " + config[buildName].containerName + " \
                         -p 8090:8090 \
@@ -57,13 +57,13 @@ const runDockerContainer = async (buildName = config.defaultBuildName) => {
     return hash;
   }
   catch(err) {
-    logger.elog("Running docker container failed", err.message);
+    logger.elog("Failed to run docker container", err.message);
   }
 };
 
 const stopDockerContainer = async (hash) => {
   try {
-    logger.oklog("Stopping docker container");
+    logger.log("Stopping docker container");
     let dockerCommand = "sudo docker stop " + hash;
 
 
@@ -90,7 +90,7 @@ const stopDockerContainer = async (hash) => {
 
 const rmDockerContainer = async (hash) => {
   try {
-    logger.oklog("Removing docker container");
+    logger.log("Removing docker container");
     let dockerCommand = "sudo docker rm " + hash;
 
     let resultHash = '';
@@ -108,6 +108,7 @@ const rmDockerContainer = async (hash) => {
     await waitConditionChange( async ()=> {
       return resultHash.length > 0;
     }, 500);
+    logger.oklog('Done', {} );
   }
   catch(err) {
     logger.elog("Removing docker container failed.", err.message);
@@ -116,7 +117,7 @@ const rmDockerContainer = async (hash) => {
 
 const cleanWitnessNodeDataDir = async (buildName = config.defaultBuildName) => {
   try {
-    logger.oklog("Cleaning blockchain data dir");
+    logger.log("Cleaning blockchain data dir");
     let dockerCommand = "rm -r " +
           config[buildName].volumeDataDir + "/blockchain/ \
       " + config[buildName].volumeDataDir + "/logs/ \
@@ -136,6 +137,8 @@ const cleanWitnessNodeDataDir = async (buildName = config.defaultBuildName) => {
     await waitConditionChange( async ()=> {
       return done;
     }, 100);
+
+    logger.oklog('Done', {} );
   }
   catch(err) {
     logger.elog("Removing docker container failed.", err.message);
@@ -144,12 +147,12 @@ const cleanWitnessNodeDataDir = async (buildName = config.defaultBuildName) => {
 
 const setConfig = async (configData, buildName = config.defaultBuildName) => {
   try {
-    logger.oklog("Changing config.ini file");
+    logger.log("Changing config.ini file");
 
     let configPath = path.resolve(config[buildName].configDir, './config.ini');
     await fs.writeFileSync(configPath, configData);
 
-    logger.oklog('Config file was changed', {} );
+    logger.oklog('Done', {} );
   }
   catch(err) {
     logger.elog('Can not write to config file', { "error": err.message});
@@ -158,7 +161,7 @@ const setConfig = async (configData, buildName = config.defaultBuildName) => {
 
 const setBlockLog = async (buildName = config.defaultBuildName) => {
   try {
-    await logger.oklog("Adding block log");
+    await logger.log("Adding block log");
     let dockerCommand = 'cp -r ' + config[buildName].blocklogPath + ' ' + config[buildName].volumeDataDir;
 
     let done = false;
@@ -175,11 +178,47 @@ const setBlockLog = async (buildName = config.defaultBuildName) => {
     await waitConditionChange( async ()=> {
       return done;
     }, 100);
+
+    logger.oklog('Done', {} );
   }
   catch(err) {
     logger.elog("Adding block log failed.", err.message);
   }
 };
+
+// Executes cli_wallet commands sequently one by one
+const runCliWalletScript = async (commands, buildName = config.defaultBuildName) => {
+  try {
+    console.log('BEGIN')
+      let command = "sudo docker exec -i " + config[buildName].containerName + "\
+        /usr/local/bin/cli_wallet --server-rpc-endpoint=\"ws://127.0.0.1:8091\" \
+        --commands=\"" + commands + "\""
+
+    let done = false;
+    let cmd = cp.exec(command, {detached: false});
+
+    cmd.stdout.on('data', function (data) {
+      console.log(data.toString('utf8'));
+    });
+
+    cmd.stderr.on('data', function (data) {
+      console.log(data.toString('utf8'));
+    });
+
+    cmd.on('close', () => {
+      done = true;
+    });
+
+    await waitConditionChange( async ()=> {
+        return done;
+    }, 100);
+    console.log('SUCCESS')
+  }
+  catch(err) {
+    logger.elog("Executing cli_wallet script failed with error", err.message);
+  }
+};
+
 
 
 module.exports.runDockerContainer         =       runDockerContainer;
@@ -190,3 +229,4 @@ module.exports.setConfig                  =       setConfig;
 module.exports.setBlockLog                =       setBlockLog;
 module.exports.waitConditionChange        =       waitConditionChange;
 module.exports.delay                      =       delay;
+module.exports.runCliWalletScript         =       runCliWalletScript;
