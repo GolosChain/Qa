@@ -1,4 +1,6 @@
-const chai    = require('chai');
+const chai         = require('chai');
+const BigNumber    = require('bignumber.js');
+const moment       = require('moment');
 const assertArrays = require('chai-arrays');
 chai.use(assertArrays);
 
@@ -10,10 +12,10 @@ const rootDir = path.resolve(process.cwd() + "/../golos-tests/");
 const golos   = require('golos-js');
 
 golos.config.set('websocket', "ws://0.0.0.0:8091");
-golos.config.set('address_prefix', "GLS");
-golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099de9deef6cdb679");
+// golos.config.set('address_prefix', "GLS");
+// golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099de9deef6cdb679");
 
-/* WITNESS API BEGIN
+//* WITNESS API BEGIN
   describe("witness_api::get_current_median_history_price", async () => {
     it("witness_api::get_current_median_history_price", async () => {
       let res = await golos.api.getCurrentMedianHistoryPriceAsync();
@@ -246,7 +248,7 @@ golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
   });
 // WITNESS API END */
 
-/* ACCOUNT HISTORY BEGIN
+//* ACCOUNT HISTORY BEGIN
   describe("account_history::get_account_history", async () => {
     it("account_history::get_account_history", async () => {
       let res = await golos.api.getAccountHistory('cyberfounder');
@@ -259,7 +261,7 @@ golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
 });
 // ACCOUNT HISTORY END */
 
-/* OPERATION HISTORY BEGIN
+//* OPERATION HISTORY BEGIN
   describe("operation_history::get_ops_in_block", async () => {
     it("operation_history::get_ops_in_block", async () => {
       let res = await golos.api.getOpsInBlock(200);
@@ -297,11 +299,155 @@ golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
   });
 //  OPERATION HISTORY END */
 
-/* TAGS BEGIN
-  describe("tags::get_trending_tags", async () => { // TODO
+//* TAGS BEGIN
+
+  const checkDiscussionObject = (o) => {
+    o.should.have.property('id');
+    o.should.have.property('author');
+    o.should.have.property('permlink');
+    o.should.have.property('parent_author');
+    o.should.have.property('parent_permlink');
+    o.should.have.property('category');
+    o.should.have.property('title');
+    o.should.have.property('body');
+    o.should.have.property('json_metadata');
+    o.should.have.property('last_update');
+    o.should.have.property('created');
+    o.should.have.property('active');
+    o.should.have.property('last_payout');
+    o.should.have.property('depth');
+    o.should.have.property('children');
+    o.should.have.property('children_rshares2');
+    o.should.have.property('net_rshares');
+    o.should.have.property('abs_rshares');
+    o.should.have.property('vote_rshares');
+    o.should.have.property('children_abs_rshares');
+    o.should.have.property('cashout_time');
+    o.should.have.property('max_cashout_time');
+    o.should.have.property('total_vote_weight');
+    o.should.have.property('reward_weight');
+    o.should.have.property('total_payout_value');
+    o.should.have.property('beneficiary_payout_value');
+    o.should.have.property('beneficiary_gests_payout_value');
+    o.should.have.property('curator_payout_value');
+    o.should.have.property('curator_gests_payout_value');
+    o.should.have.property('author_rewards');
+    o.should.have.property('author_gbg_payout_value');
+    o.should.have.property('author_golos_payout_value');
+    o.should.have.property('author_gests_payout_value');
+    o.should.have.property('net_votes');
+    o.should.have.property('mode');
+    o.should.have.property('curation_reward_curve');
+    o.should.have.property('auction_window_reward_destination');
+    o.should.have.property('auction_window_size');
+    o.should.have.property('auction_window_weight');
+    o.should.have.property('votes_in_auction_window_weight');
+    o.should.have.property('root_comment');
+    o.should.have.property('root_title');
+    o.should.have.property('max_accepted_payout');
+    o.should.have.property('percent_steem_dollars');
+    o.should.have.property('allow_replies');
+    o.should.have.property('allow_votes');
+    o.should.have.property('allow_curation_rewards');
+    o.should.have.property('curation_rewards_percent');
+    o.should.have.property('beneficiaries');
+    o.should.have.property('url');
+    o.should.have.property('pending_author_payout_value');
+    o.should.have.property('pending_author_payout_gbg_value');
+    o.should.have.property('pending_author_payout_gests_value');
+    o.should.have.property('pending_author_payout_golos_value');
+    o.should.have.property('pending_benefactor_payout_value');
+    o.should.have.property('pending_benefactor_payout_gests_value');
+    o.should.have.property('pending_curator_payout_value');
+    o.should.have.property('pending_curator_payout_gests_value');
+    o.should.have.property('pending_payout_value');
+    o.should.have.property('total_pending_payout_value');
+
+    o.id.should.satisfy(isNumber);
+    o.author.should.be.a('string');
+    o.permlink.should.be.a('string');
+    o.parent_author.should.be.a('string');
+    o.parent_permlink.should.be.a('string');
+    o.category.should.be.a('string');
+    o.title.should.be.a('string');
+    o.body.should.be.a('string');
+    o.json_metadata.should.be.a('string');
+    checkDate(o.last_update);
+    checkDate(o.created);
+    checkDate(o.active);
+    checkDate(o.last_payout);
+    o.depth.should.satisfy(isNumber);
+    o.children.should.satisfy(isNumber);
+    o.children_rshares2.should.satisfy(isNumber);
+    o.net_rshares.should.satisfy(isNumber);
+    o.abs_rshares.should.satisfy(isNumber);
+    o.vote_rshares.should.satisfy(isNumber);
+    o.children_abs_rshares.should.satisfy(isNumber);
+    checkDate(o.cashout_time);
+    checkDate(o.max_cashout_time);
+    o.total_vote_weight.should.satisfy(isNumber);
+    o.reward_weight.should.satisfy(isNumber);
+    o.total_payout_value.should.be.a('string');
+    o.beneficiary_payout_value.should.be.a('string');
+    o.beneficiary_gests_payout_value.should.be.a('string');
+    o.curator_payout_value.should.be.a('string');
+    o.curator_gests_payout_value.should.be.a('string');
+    o.author_rewards.should.satisfy(isNumber);
+    o.author_gbg_payout_value.should.be.a('string');
+    o.author_golos_payout_value.should.be.a('string');
+    o.author_gests_payout_value.should.be.a('string');
+    o.net_votes.should.satisfy(isNumber);
+    o.mode.should.be.a('string');
+    o.curation_reward_curve.should.be.a('string');
+    o.auction_window_reward_destination.should.be.a('string');
+    o.auction_window_size.should.be.a('number');
+    o.auction_window_weight.should.satisfy(isNumber);
+    o.votes_in_auction_window_weight.should.satisfy(isNumber);
+    o.root_comment.should.satisfy(isNumber);
+    o.root_title.should.be.a('string');
+    o.max_accepted_payout.should.be.a('string');
+    o.percent_steem_dollars.should.satisfy(isNumber);
+    o.allow_replies.should.be.a('boolean');
+    o.allow_votes.should.be.a('boolean');
+    o.allow_curation_rewards.should.be.a('boolean');
+    o.curation_rewards_percent.should.be.a('number');
+    o.beneficiaries.should.be.a('array');
+    o.url.should.be.a('string');
+    o.pending_author_payout_value.should.be.a('string');
+    o.pending_author_payout_gbg_value.should.be.a('string');
+    o.pending_author_payout_gests_value.should.be.a('string');
+    o.pending_author_payout_golos_value.should.be.a('string');
+    o.pending_benefactor_payout_value.should.be.a('string');
+    o.pending_benefactor_payout_gests_value.should.be.a('string');
+    o.pending_curator_payout_value.should.be.a('string');
+    o.pending_curator_payout_gests_value.should.be.a('string');
+    o.pending_payout_value.should.be.a('string');
+    o.total_pending_payout_value.should.be.a('string');
+
+    o.active_votes.should.be.a('array');
+    o.active_votes.forEach(checkVote);
+
+
+    o.should.have.property('active_votes_count');
+    o.should.have.property('replies');
+    o.should.have.property('author_reputation');
+    o.should.have.property('promoted');
+    o.should.have.property('body_length');
+    o.should.have.property('reblogged_by');
+    o.should.have.property('reblog_entries');
+
+    o.active_votes_count.should.be.a('number');
+    o.replies.should.be.a('array');
+    o.author_reputation.should.satisfy(isNumber);
+    o.promoted.should.be.a('string');
+    o.body_length.should.satisfy(isNumber);
+    o.reblogged_by.should.be.a('array');
+    o.reblog_entries.should.be.a('array');
+  }
+  describe("tags::get_trending_tags", async () => { 
     it("tags::get_trending_tags", async () => {
       let tags = "tag1";
-      let res = await golos.api.getTrendingTagsAsync(tags, 10);
+      let res = await golos.api.getTrendingTagsAsync('golosio', 10);
 
       res.forEach((val) => {
         val.should.be.a('object');
@@ -325,180 +471,211 @@ golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
 
   describe("tags::get_tags_used_by_author", async () => {
     it("tags::get_tags_used_by_author", async () => {
-      let author1 = 'tags-one';
-      let res = await golos.api.getTagsUsedByAuthorAsync(author1);
+      golos.config.set('websocket', "wss://ws.golos.io");
+
+      let res = await golos.api.getTagsUsedByAuthorAsync("golosio");
       console.log(res);
-
-      res.should.be.a('array');
-      await res.forEach((val) => {
-        val.should.be.a('array');
-        val[0].should.be.a('string');
-        val[1].should.be.a('number');
+      res.forEach((x) => {
+        x.should.be.a('array');
+        x[0].should.be.a('string');
+        x[1].should.be.a('number');
       });
-
     });
 
   });
 
   describe("tags::get_discussions_by_payout", async () => {
     it("tags::get_discussions_by_payout", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_tags: ['bitcoin'],
+        limit: 2
+      }
 
       let res = await golos.api.getDiscussionsByPayoutAsync(query);
-      console.log(res);
-
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
 
   });
 
   describe("tags::get_discussions_by_trending", async () => {
     it("tags::get_discussions_by_trending", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_tags: ['bitcoin'],
+        limit: 2
+      }
 
       let res = await golos.api.getDiscussionsByTrendingAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
-
   });
 
   describe("tags::get_discussions_by_created", async () => {
     it("tags::get_discussions_by_created", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_tags: ['bitcoin'],
+        limit: 2
+      }
 
       let res = await golos.api.getDiscussionsByCreatedAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
 
   });
 
   describe("tags::get_discussions_by_active", async () => {
     it("tags::get_discussions_by_active", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_tags: ['bitcoin'],
+        limit: 2
+      }
 
       let res = await golos.api.getDiscussionsByActiveAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
   });
 
   describe("tags::get_discussions_by_cashout", async () => {
     it("tags::get_discussions_by_cashout", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_tags: ['bitcoin'],
+        limit: 2
+      }
 
       let res = await golos.api.getDiscussionsByCashoutAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
   });
 
   describe("tags::get_discussions_by_votes", async () => {
     it("tags::get_discussions_by_votes", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_tags: ['bitcoin'],
+        limit: 2
+      }
 
       let res = await golos.api.getDiscussionsByVotesAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
   });
 
   describe("tags::get_discussions_by_children", async () => {
     it("tags::get_discussions_by_children", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_tags: ['bitcoin'],
+        limit: 2
+      }
 
       let res = await golos.api.getDiscussionsByChildrenAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
 
   });
 
   describe("tags::get_discussions_by_hot", async () => {
     it("tags::get_discussions_by_hot", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_tags: ['bitcoin'],
+        limit: 2
+      }
 
       let res = await golos.api.getDiscussionsByHotAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
   });
 
   describe("tags::get_discussions_by_feed", async () => {
     it("tags::get_discussions_by_feed", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_authors: ['golosio']
+      }
 
       let res = await golos.api.getDiscussionsByFeedAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
   });
 
   describe("tags::get_discussions_by_blog", async () => {
     it("tags::get_discussions_by_blog", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_authors: ['golosio']
+      }
 
       let res = await golos.api.getDiscussionsByBlogAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
   });
 
   describe("tags::get_discussions_by_comments", async () => {
     it("tags::get_discussions_by_comments", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        start_author: 'golosio',
+        limit: 2
+      }
 
       let res = await golos.api.getDiscussionsByCommentsAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
   });
 
   describe("tags::get_discussions_by_promoted", async () => {
     it("tags::get_discussions_by_promoted", async () => {
+      golos.config.set('websocket', "wss://ws.golos.io");
+
       let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+        select_tags: ['bitcoin'],
+        limit: 2
+      }
 
       let res = await golos.api.getDiscussionsByPromotedAsync(query);
-      console.log(res);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
     });
   });
 
   describe("tags::get_discussions_by_author_before_date", async () => {
     it("tags::get_discussions_by_author_before_date", async () => {
-      let query = {
-        start_author: 'tags-three',
-        start_permlink: 'tags-three'
-      };
+      golos.config.set('websocket', "wss://ws.golos.io");
 
-      let res = await golos.api.getDiscussionsByAuthorBeforeDateAsync(query);
-      console.log(res);
-    });
+      let date = moment();
+      let beforeDateString = (date.format()).split('+')[0];
+
+      let res = await golos.api.getDiscussionsByAuthorBeforeDateAsync("golosio", 'golos-io-obnovlennaya-shapka-saita', beforeDateString, 2);
+      // console.log(res);
+      res.forEach(checkDiscussionObject);
+    }).timeout(10000);
   });
 
   describe("tags::get_languages", async () => {
@@ -518,7 +695,7 @@ golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
 // TAGS END */
 
 
-/* SOCIAL NETWORK BEGIN
+//* SOCIAL NETWORK BEGIN
   describe("social_network::get_replies_by_last_update", async () => {
     it("social_network::get_replies_by_last_update", async () => {
       let actorName = 'get-content-test';
@@ -987,48 +1164,48 @@ golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
     });
   });
 
-  // describe("database_api::get_escrow", async () => {
-  //   it("database_api::get_escrow", async () => {
-  //     let res = await golos.api.getEscrowAsync(100);
-  //     console.log(res);
+  describe("database_api::get_escrow", async () => {
+    it("database_api::get_escrow", async () => {
+      let res = await golos.api.getEscrowAsync(100);
+      console.log(res);
 
-  //     res.should.have.property('escrow_id');
-  //     res.escrow_id.should.satisfy(isNumber);
+      res.should.have.property('escrow_id');
+      res.escrow_id.should.satisfy(isNumber);
 
-  //     res.should.have.property('from');
-  //     res.from.should.be.a('string');
+      res.should.have.property('from');
+      res.from.should.be.a('string');
 
-  //     res.should.have.property('to');
-  //     res.to.should.be.a('string');
+      res.should.have.property('to');
+      res.to.should.be.a('string');
 
-  //     res.should.have.property('agent');
-  //     res.agent.should.be.a('string');
+      res.should.have.property('agent');
+      res.agent.should.be.a('string');
 
-  //     res.should.have.property('ratification_deadline');
-  //     res.ratification_deadline.should.be.a('string');
+      res.should.have.property('ratification_deadline');
+      res.ratification_deadline.should.be.a('string');
 
-  //     res.should.have.property('escrow_expiration');
-  //     res.escrow_expiration.should.be.a('string');
+      res.should.have.property('escrow_expiration');
+      res.escrow_expiration.should.be.a('string');
 
-  //     res.should.have.property('sbd_balance');
-  //     res.sbd_balance.should.be.a('string');
+      res.should.have.property('sbd_balance');
+      res.sbd_balance.should.be.a('string');
 
-  //     res.should.have.property('steem_balance');
-  //     res.steem_balance.should.be.a('string');
+      res.should.have.property('steem_balance');
+      res.steem_balance.should.be.a('string');
 
-  //     res.should.have.property('pending_fee');
-  //     res.pending_fee.should.be.a('string');
+      res.should.have.property('pending_fee');
+      res.pending_fee.should.be.a('string');
 
-  //     res.should.have.property('to_approved');
-  //     res.to_approved.should.be.a('boolean');
+      res.should.have.property('to_approved');
+      res.to_approved.should.be.a('boolean');
 
-  //     res.should.have.property('agent_approved');
-  //     res.agent_approved.should.be.a('boolean');
+      res.should.have.property('agent_approved');
+      res.agent_approved.should.be.a('boolean');
 
-  //     res.should.have.property('disputed');
-  //     res.disputed.should.be.a('boolean');
-  //   });
-  // });
+      res.should.have.property('disputed');
+      res.disputed.should.be.a('boolean');
+    });
+  });
 
   describe("database_api::get_withdraw_routes", async () => {
     it("database_api::get_withdraw_routes", async () => {
@@ -1202,7 +1379,7 @@ golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
   });
 // DATABASE API END */
 
-/* FOLLOW BEGIN
+//* FOLLOW BEGIN
   describe("follow::get_followers", async () => {
     it("follow::get_followers", async () => {
 
@@ -1463,7 +1640,7 @@ golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
 // FOLLOW END */
 
 
-/*  ACCOUNT BY KEY BEGIN
+//* ACCOUNT BY KEY BEGIN
   describe("account_by_key::get_key_references", async () => {
     it("account_by_key::get_key_references", async () => {
       let res = await golos.api.getKeyReferencesAsync(["GLS58g5rWYS3XFTuGDSxLVwiBiPLoAyCZgn6aB9Ueh8Hj5qwQA3r6"]);
@@ -1481,7 +1658,7 @@ golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
   });
 // ACCOUNT BY KEY END */
 
-/*  NETWORK BROADCAST BEGIN
+//* NETWORK BROADCAST BEGIN
   describe("network_broadcast_api::broadcast_transaction", async () => {
     it("network_broadcast_api::broadcast_transaction", async () => {
     });
@@ -1504,7 +1681,7 @@ golos.config.set('chain_id', "5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099
   });
 // NETWORK BROADCAST END */
 
-/* MARKET HISTORY BEGIN
+//* MARKET HISTORY BEGIN
   describe("market_history::get_ticker", async () => {
     it("market_history::get_ticker", async () => {
       let res = await golos.api.getTickerAsync();
@@ -2027,7 +2204,11 @@ const checkCommentApiObject = async (o) => {
 };
 
 const isNumber = (val) => {
-  return !isNaN(parseInt(val)) && isFinite(val);
+  let tmp = new BigNumber(val);
+  if (tmp.c === null) {
+    return false
+  }
+  return true;
 };
 
 const checkVote = async (o) => {
@@ -2117,8 +2298,8 @@ const followCommentCheck = (comment) => {
   comment.depth.should.be.a('number');
   comment.children.should.be.a('number');
   comment.children_rshares2.should.be.a('string');
-  comment.net_rshares.should.be.a('number');
-  comment.abs_rshares.should.be.a('number');
+  comment.net_rshares.should.satisfy(isNumber);
+  comment.abs_rshares.should.satisfy(isNumber);
   comment.vote_rshares.should.be.a('number');
   comment.children_abs_rshares.should.be.a('number');
   comment.cashout_time.should.be.a('string');
@@ -2185,3 +2366,15 @@ const getWindowLimitsByTimestamp = (timePoint) => {
   }
   return result;
 }
+
+
+const checkDate = (dateString) => {
+  const formats = [
+    moment.ISO_8601
+  ];
+  let isValid = moment(dateString, formats, true).isValid();
+
+  isValid.should.be.a('boolean');
+  isValid.should.be.eql(true);
+};
+
